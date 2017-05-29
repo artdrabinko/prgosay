@@ -471,16 +471,60 @@ class Worker(QObject):
         self.finished.emit()
 
 
-class MessageSendByMe(QtGui.QLabel):
+
+
+
+
+
+class MessageByMe(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
-        self.setMinimumSize(90, 65)
-        self.setMaximumSize(310, 150)
-        self.setStyleSheet('padding: 7px; background: #DBD9D4; color: #222222;'
-                             ' border-radius: 10px; border-bottom-right-radius: 0px;'
-                             ' margin-bottom: 15px;')
+        self.setMinimumSize(90, 40)
+        self.setStyleSheet(' background: #EFFDDE; color: #555555;'
+                           ' border-radius: 10px;'
+                           ' border: none;border-bottom: 1.5px solid #C5E2AD;')
+
+class MessageSendByMeWidget(QtGui.QLabel):
+    def __init__(self, parent=None):
+        QtGui.QLabel.__init__(self, parent)
+        #self.setContentsMargins(5, 5, 5, 5)
+        self.setMinimumSize(300, 40)
+        #self.setMaximumWidth(600)
+        self.adjustSize()
+        self.setStyleSheet('border: none; background: transparent; color: #555555;')
+
+        self.containerLayout = HLayout()
+        self.containerLayout.setAlignment(QtCore.Qt.AlignRight)
+        #self.containerLayout.setContentsMargins(10,5,10,5)
+        self.setLayout(self.containerLayout)
+                    # /  left /   top  /   right /  bottom  /
+
+        self.MyLogoLayoutbyMessage = VLayout()
+        self.MyLogoLayoutbyMessage.setAlignment(QtCore.Qt.AlignTop)
+        self.MyLogoLayoutbyMessage.setContentsMargins(5, 1, 0, 0)
+
+
+        self.MyLogoWidgetbyMessage = QtGui.QLabel()
+        self.MyLogoWidgetbyMessage.setMinimumSize(36,36)
+        self.MyLogoWidgetbyMessage.setMaximumSize(36,36)
+        self.MyLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/myLogoAboutMessage.png);'
+                                                     ' border-radius: 18px; border: 1px solid #FFFFFF;')
+        self.MyLogoLayoutbyMessage.addWidget(self.MyLogoWidgetbyMessage)
+
+
+
+        self.LabelMessageWidget = MessageByMe()
+        self.containerLayout.addWidget(self.LabelMessageWidget)
+        self.containerLayout.addLayout(self.MyLogoLayoutbyMessage)
+
+
+
+
+
+
+
 
 
 class MessageFromFriend(QtGui.QLabel):
@@ -488,11 +532,46 @@ class MessageFromFriend(QtGui.QLabel):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
-        self.setMinimumSize(90, 65)
-        self.setMaximumSize(310, 150)
-        self.setStyleSheet('padding: 7px; background: #FBFAF9; color: #555555;'
-                           ' border-radius: 10px; margin-bottom: 15px;'
-                           ' border-top-left-radius: 0px; border: 1px solid #EAEAEA;')
+        self.setMinimumSize(90, 40)
+        self.setStyleSheet(' background: #FBFAF9; color: #555555;'
+                           ' border-radius: 10px;'
+                           ' border: none;border-bottom: 1.5px solid #E2E4E3')
+
+class MessageFromFriendTestWidget(QtGui.QLabel):
+    def __init__(self, parent=None):
+        QtGui.QLabel.__init__(self, parent)
+        #self.setContentsMargins(5, 5, 5, 5)
+        self.setMinimumSize(300, 40)
+        #self.setMaximumWidth(600)
+        self.adjustSize()
+        self.setStyleSheet('border: none; background: transparent; color: #555555;')
+
+        self.containerLayout = HLayout()
+        self.containerLayout.setAlignment(QtCore.Qt.AlignLeft)
+        #self.containerLayout.setContentsMargins(10,5,10,5)
+        self.setLayout(self.containerLayout)
+                    # /  left /   top  /   right /  bottom  /
+
+        self.FriendLogoLayoutbyMessage = VLayout()
+        self.FriendLogoLayoutbyMessage.setAlignment(QtCore.Qt.AlignTop)
+        self.FriendLogoLayoutbyMessage.setContentsMargins(0, 1, 5, 0)
+        self.containerLayout.addLayout(self.FriendLogoLayoutbyMessage)
+
+        self.FriendLogoWidgetbyMessage = QtGui.QLabel()
+        self.FriendLogoWidgetbyMessage.setMinimumSize(36,36)
+        self.FriendLogoWidgetbyMessage.setMaximumSize(36,36)
+        self.FriendLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/logoFriendaboutMessage.jpg);'
+                                                     ' border-radius: 18px; border: 1px solid #FFFFFF;')
+        self.FriendLogoLayoutbyMessage.addWidget(self.FriendLogoWidgetbyMessage)
+
+
+
+        self.LabelMessageWidget = MessageFromFriend()
+        self.containerLayout.addWidget(self.LabelMessageWidget)
+
+
+
+
 
 
 
@@ -646,16 +725,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftWidget.setContentsMargins(0, 0, 0, 0)
         self.leftWidget.setVisible(False)
 
-        self.rightWidget = QtGui.QWidget()
-        self.rightWidget.setMinimumSize(300, 470)
-        self.rightWidget.setMaximumSize(600, 900)
-        # self.rightWidget.setStyleSheet('border: none;background: #F2EDE8 ; border-left: 1px solid #cacfd2;')
 
-        self.rightWidget.setStyleSheet('background: url(./fon3.png); border: none;'
-                                       'border-left: 1px solid #cacfd2;')
-        self.rightWidget.setContentsMargins(0, 0, 0, 0)
-        # left,top,right, bottom
-        self.rightWidget.setVisible(False)
 
         # ...................Start content self.leftWidget.............................
         leftWidgetlayout = VLayout()
@@ -688,41 +758,40 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.layoutForleftArea.setAlignment(QtCore.Qt.AlignTop)
         self.boxwid.setLayout(self.layoutForleftArea)
 
-        self.Friend = QtGui.QLabel('   Nikolai Komar\n   You: Hi!')
-        self.Friend.setMinimumSize(300, 62)
-        self.Friend.setMaximumSize(320, 62)
-        self.Friend.setStyleSheet('background: #419fd9; color: #ffffff; border: none;')
 
-        self.Friend1 = QtGui.QLabel('   Friend\n   You: Whats app?')
-        self.Friend1.setMinimumSize(300, 62)
-        self.Friend1.setMaximumSize(320, 62)
-        self.Friend1.setStyleSheet('background: #f1f1f1; color: #171515; border: none;'
-                                   ' border-bottom: 1px solid #cacfd2')
 
-        self.layoutForleftArea.addWidget(self.Friend)
-        self.layoutForleftArea.addWidget(self.Friend1)
 
         leftWidgetlayout.addWidget(self.leftHeader)
         leftWidgetlayout.addWidget(self.leftArea)
-        # leftWidgetlayout.setAlignment(Qt.)
-
 
         # ...................End content self.leftWidget.............................
 
 
 
 
+
+
         # ...................Start content self.rightWidget.............................
+        self.rightWidget = QtGui.QLabel()
+        self.rightWidget.setMinimumSize(300, 470)
+        self.rightWidget.adjustSize()
+        #self.rightWidget.setMaximumSize(1000, 1000)
+        self.rightWidget.setContentsMargins(0, 0, 0, 0)
+        self.rightWidget.setStyleSheet(' border: none; background-image: url(./fon3.png);'
+                                       'border-left: 1px solid #cacfd2;')
         rightWidgetlayout = VLayout()
         rightWidgetlayout.setAlignment(QtCore.Qt.AlignTop)
         self.rightWidget.setLayout(rightWidgetlayout)
+        self.rightWidget.setVisible(False)
+
+#background: url(./fon3.png);
 
         self.rightHeader = EmptyBoxWidget()
         layoutForWidgetsRightHeader = HLayout()
         self.rightHeader.setLayout(layoutForWidgetsRightHeader)
 
         self.rightHeader.setMinimumSize(280, 55)
-        self.rightHeader.setMaximumSize(600, 55)
+        self.rightHeader.setMaximumSize(1000, 55)
         self.rightHeader.setStyleSheet('border:none;border-left: 1.5px solid #D6D6D6;'
                                        ' border-bottom: 1.5px solid #D6D6D6; background: #fdfcfc;')
 
@@ -736,20 +805,24 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForWidgetsRightHeader.addWidget(self.labelNameUserReightHeader)
         layoutForWidgetsRightHeader.setAlignment(QtCore.Qt.AlignCenter)
 
+
+
         self.rightArea = QtGui.QScrollArea()
         self.rightArea.setWidgetResizable(True)
         self.rightArea.setMinimumSize(300, 400)
-        self.rightArea.setMaximumSize(600, 900)
-
+        self.rightArea.adjustSize()
+        #self.rightArea.adjustSize()
         self.rightArea.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
 
 
         self.rightArea.setContentsMargins(0, 0, 0, 0)
-        self.rightArea.setStyleSheet(' border:none; background:transparent;')
+        self.rightArea.setStyleSheet('border:none; background: transparent;')
 
+
+        self.rightArea.setAlignment(QtCore.Qt.AlignCenter)
         self.rightWidgetForSendMessage = EmptyBoxWidget()
         self.rightWidgetForSendMessage.setMinimumSize(300, 55)
-        self.rightWidgetForSendMessage.setMaximumSize(600, 55)
+        self.rightWidgetForSendMessage.setMaximumSize(1000, 55)
         self.rightWidgetForSendMessage.setStyleSheet('background: #EBEBEB; border: none;'
                                                      ' border-left: 1.5px solid #D6D6D6;'
                                                      ' border-top: 1.5px solid #D6D6D6;'
@@ -778,48 +851,18 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForRightWidgetSendMessage.addWidget(self.start_btn)
         layoutForRightWidgetSendMessage.addWidget(self.inputWidgetForSendMessage)
         layoutForRightWidgetSendMessage.addWidget(self.buttonSendMessage)
-
-        self.boxwidr = QtGui.QWidget()
+#\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+        self.boxwidr = QtGui.QLabel()
+        self.boxwidr.setMaximumWidth(550)
+        #self.boxwidr.adjustSize()
         self.rightArea.setWidget(self.boxwidr)
         self.layoutForRightArea = VLayout()
         self.layoutForRightArea.setAlignment(QtCore.Qt.AlignTop)
         self.boxwidr.setLayout(self.layoutForRightArea)
 
-        self.boxwidr.setContentsMargins(10, 4, 4, 10)
-        self.boxwidr.setStyleSheet('background: #f3f3f3; background:transparent; border: none;')
-        # self.boxwidr.setStyleSheet('background-image: url(./fon.jpg);background-repeat:no-repeat;padding-left: 20px;border-left: 1px solid #cacfd2;')
+        self.boxwidr.setContentsMargins(0, 0, 0, 0)
+        self.boxwidr.setStyleSheet('border:none; background: transparent;')
 
-        self.rightRowMess = EmptyBoxWidget()
-        rLay = HLayout()
-        self.rightRowMess.setLayout(rLay)
-
-        self.Friend = QtGui.QLabel('Hi how are you? kkggg gg kkk kkkkkkkkkkkkkk kkkkkk kkkkkkkkkkk')
-        self.Friend.setAlignment(QtCore.Qt.AlignLeft)
-        self.Friend.setWordWrap(True)
-        self.Friend.setMinimumSize(290, 65)
-        self.Friend.setMaximumSize(290, 100)
-        self.Friend.setStyleSheet('padding: 7px; background: #FBFAF9; color: #222222;'
-                                  ' border-radius: 10px; margin-bottom: 15px;'
-                                  ' border-top-left-radius: 0px; border: 1px solid #EAEAEA;')
-        # background: url(./lmess.png) no-repeat;
-        self.Friend1 = QtGui.QLabel('Hi, i am f kkkkkkkkkkkkkksdc dsc sc sd c sa ckkkkkk kkkk')
-        self.Friend1.setAlignment(QtCore.Qt.AlignLeft)
-        self.Friend1.setWordWrap(True)
-        self.Friend1.setMinimumSize(100, 65)
-        self.Friend1.setMaximumSize(250, 300)
-        self.Friend1.setStyleSheet('padding: 7px; background: #DBD9D4; color: #222222;'
-                                   ' border-radius: 10px; border-bottom-right-radius: 0px;'
-                                   ' margin-bottom: 15px;')
-
-        self.lLabe = QtGui.QLabel()
-        self.lLabe.setMinimumSize(150, 65)
-        self.lLabe.setMaximumSize(150, 65)
-        self.lLabe.setStyleSheet('border: none;')
-        rLay.addWidget(self.lLabe)
-        rLay.addWidget(self.Friend1)
-
-        self.layoutForRightArea.addWidget(self.Friend)
-        self.layoutForRightArea.addWidget(self.rightRowMess)
 
         rightWidgetlayout.addWidget(self.rightHeader)
         rightWidgetlayout.addWidget(self.rightArea)
@@ -917,16 +960,17 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.inputLineForPasswordUser.setText('incorrect Pasword')
 
     def resizeEvent(self, event):
-        if(self.width() < 700):
+        if(self.width() < 600):
             self.leftWidget.setVisible(False)
         if(self.width() > 600):
             self.leftWidget.setVisible(True)
 
     def start_main_user_form(self):
         print 'True login'
-        self.setMinimumSize(380, 480)
-        self.setMaximumSize(920, 900)
-
+        self.setWindowTitle('GoSay')
+        self.setMinimumSize(380, 450)
+        self.setMaximumSize(1500, 1000)
+        self.resize(800, 540)
         self.logoWidget.setVisible(False)
         self.inputLineForLoginUser.setVisible(False)
         self.inputLineForPasswordUser.setVisible(False)
@@ -959,8 +1003,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.leftWidget.setVisible(self.statusConnection)
         self.rightWidget.setVisible(self.statusConnection)
-        self.resize(800, 500)
-        # self.act.rec()
+
 
 
 
@@ -978,20 +1021,31 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.thread.start()
 
     def addMessageFromFriend(self,i):
-        try:
-            self.leftMessageFromFriend = MessageFromFriend('Process ' + str(i))
-            self.layoutForRightArea.addWidget(self.leftMessageFromFriend)
-        except :
-            print '............. error....................'
+        #try:
+            #self.leftMessageFromFriend = MessageFromFriend('Process ' + str(i))
+            #self.layoutForRightArea.addWidget(self.leftMessageFromFriend)
 
+            self.testWidget = MessageFromFriendTestWidget()
 
+            self.testWidget.LabelMessageWidget.setText('Process ' + str(i))
+            self.layoutForRightArea.addWidget(self.testWidget)
+
+            #self.layoutForleftArea.addWidget(self.testWidget)
+
+        #except :
+            #print '............. error....................'
 
     def send_message(self):
         try:
             self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
 
-            self.leftMessageByMe = MessageSendByMe(str(self.inputWidgetForSendMessage.text()))
-            self.layoutForRightArea.addWidget(self.leftMessageByMe)
+            #self.leftMessageByMe = MessageSendByMe(str(self.inputWidgetForSendMessage.text()))
+            #self.layoutForRightArea.addWidget(self.leftMessageByMe)
+
+            self.messageByMetestWidget = MessageSendByMeWidget()
+            self.messageByMetestWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text()))
+            self.layoutForRightArea.addWidget(self.messageByMetestWidget)
+
         except:
             print '............. error....................'
 
@@ -1022,3 +1076,4 @@ sys.exit(app.exec_())
 
 
 # background: url(./lmess.png) no-repeat;
+# background:transparent;
