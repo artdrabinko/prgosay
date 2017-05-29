@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="testDB@localhost">
+  <database-model serializer="dbm" rdbms="MYSQL" format-version="4.2">
+    <root id="1"/>
+    <schema id="2" parent="1" name="testDB">
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <schema id="3" parent="1" name="information_schema"/>
+    <schema id="4" parent="1" name="mysql"/>
+    <schema id="5" parent="1" name="performance_schema"/>
+    <table id="6" parent="2" name="users"/>
+    <column id="7" parent="6" name="uid">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="8" parent="6" name="login">
+      <Position>2</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="9" parent="6" name="passwd">
+      <Position>3</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="10" parent="6" name="firstname">
+      <Position>4</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="11" parent="6" name="lastname">
+      <Position>5</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="12" parent="6" name="age">
+      <Position>6</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="13" parent="6" name="conn">
+      <Position>7</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="14" parent="6" name="status_conn">
+      <Position>8</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <key id="15" parent="6" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>uid</ColNames>
+      <Primary>1</Primary>
+    </key>
+  </database-model>
+</dataSource>
