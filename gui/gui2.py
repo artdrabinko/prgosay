@@ -440,6 +440,9 @@ class ButtonRegistrationWidget(QtGui.QPushButton):
         # print 'leaveEvent press'
 
 
+
+
+
 # .....................Build Application........................................
 
 
@@ -467,6 +470,29 @@ class Worker(QObject):
 
         self.finished.emit()
 
+
+class MessageSendByMe(QtGui.QLabel):
+    def __init__(self, parent=None):
+        QtGui.QLabel.__init__(self, parent)
+        self.setAlignment(QtCore.Qt.AlignLeft)
+        self.setWordWrap(True)
+        self.setMinimumSize(90, 65)
+        self.setMaximumSize(310, 150)
+        self.setStyleSheet('padding: 7px; background: #DBD9D4; color: #222222;'
+                             ' border-radius: 10px; border-bottom-right-radius: 0px;'
+                             ' margin-bottom: 15px;')
+
+
+class MessageFromFriend(QtGui.QLabel):
+    def __init__(self, parent=None):
+        QtGui.QLabel.__init__(self, parent)
+        self.setAlignment(QtCore.Qt.AlignLeft)
+        self.setWordWrap(True)
+        self.setMinimumSize(90, 65)
+        self.setMaximumSize(310, 150)
+        self.setStyleSheet('padding: 7px; background: #FBFAF9; color: #555555;'
+                           ' border-radius: 10px; margin-bottom: 15px;'
+                           ' border-top-left-radius: 0px; border: 1px solid #EAEAEA;')
 
 
 
@@ -500,8 +526,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
                 print'\nWas be send buttonSendMessage:\n'
                 self.send_message()
 
-
-
         class buttonLogin(buttonLogin0):
             def mousePressEvent(parent, event):
                 print '370'
@@ -528,15 +552,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
                                        ' color: #3A3131; border: 1px solid #E0E0E0;'
                                        '  border-radius: 3.5px;')
 
-
-
-
-
-
-
-
-
-
         class HeaderRegistration(HeaderRegistrationWidget):
             def __init__(self, parent=None):
                 QtGui.QWidget.__init__(self, parent)
@@ -557,6 +572,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
                 LayoutH.addWidget(self.buttonBack)
                 LayoutH.addWidget(self.registrationLabel)
+
+
+
+
 
         mainAuthenticationWindowLayout = HLayout()
         self.setLayout(mainAuthenticationWindowLayout)
@@ -944,6 +963,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         # self.act.rec()
 
 
+
+
     def start(self):
         self.thread = QThread(self)
         self.worker = Worker()
@@ -953,45 +974,26 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.message.connect(self.change_text)
+        self.worker.message.connect(self.addMessageFromFriend)
         self.thread.start()
 
-
-    def change_text(self,i):
+    def addMessageFromFriend(self,i):
         try:
-            #self.labelNameUserReightHeader.setText('Process ' + str(i))
-            self.b = QtGui.QLabel('Process ' + str(i))
-            self.b.setAlignment(QtCore.Qt.AlignLeft)
-            self.b.setWordWrap(True)
-            self.b.setMinimumSize(90, 65)
-            self.b.setMaximumSize(350, 150)
-            self.b.setStyleSheet('padding: 7px; background: #FBFAF9; color: #555555;'
-                                      ' border-radius: 10px; margin-bottom: 15px;'
-                                      ' border-top-left-radius: 0px; border: 1px solid #EAEAEA;')
-            self.layoutForRightArea.addWidget(self.b)
-        except:
-            print 'error'
+            self.leftMessageFromFriend = MessageFromFriend('Process ' + str(i))
+            self.layoutForRightArea.addWidget(self.leftMessageFromFriend)
+        except :
+            print '............. error....................'
 
 
 
     def send_message(self):
-
         try:
             self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
-            self.F = QtGui.QLabel(str(self.inputWidgetForSendMessage.text()))
-            self.F.setAlignment(QtCore.Qt.AlignLeft)
 
-            self.F.setMinimumSize(50, 70)
-            self.F.setMaximumSize(250, 300)
-            self.F.setWordWrap(True)
-
-            self.F.setStyleSheet('padding: 7px; background: #DBD9D4; color: #222222;'
-                                       ' border-radius: 10px; border-bottom-right-radius: 0px;'
-                                       ' margin-bottom: 15px;')
-            self.layoutForRightArea.addWidget(self.F)
-
+            self.leftMessageByMe = MessageSendByMe(str(self.inputWidgetForSendMessage.text()))
+            self.layoutForRightArea.addWidget(self.leftMessageByMe)
         except:
-            print  'error'
+            print '............. error....................'
 
 
 
