@@ -1012,7 +1012,7 @@ main.show()
 sys.exit(app.exec_())
 
 
-print  'lopcsd'
+
 
 
 
