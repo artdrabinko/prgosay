@@ -4,6 +4,7 @@ import sys
 from PyQt4 import QtGui, QtCore, Qt
 import time
 import threading
+from time import strftime
 from PyQt4.QtGui import QCursor
 
 sys.path.insert(0, "/home/art/PycharmProjects/prgosay/actions/")
@@ -475,23 +476,24 @@ class Worker(QObject):
 
 
 
-
+#...............Create Pattern Message......................
 class MessageByMe(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
         self.setMinimumSize(90, 40)
+        #self.setContentsMargins(5, 5, 5, 5)
         self.setStyleSheet(' background: #EFFDDE; color: #555555;'
                            ' border-radius: 10px;'
-                           ' border: none;border-bottom: 1.5px solid #C5E2AD;')
-
+                           ' border: none;border-bottom: 1.4px solid #C5E2AD;')
 class MessageSendByMeWidget(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         #self.setContentsMargins(5, 5, 5, 5)
         self.setMinimumSize(300, 40)
         #self.setMaximumWidth(600)
+        self.setWordWrap(True)
         self.adjustSize()
         self.setStyleSheet('border: none; background: transparent; color: #555555;')
 
@@ -520,13 +522,6 @@ class MessageSendByMeWidget(QtGui.QLabel):
         self.containerLayout.addLayout(self.MyLogoLayoutbyMessage)
 
 
-
-
-
-
-
-
-
 class MessageFromFriend(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
@@ -535,20 +530,20 @@ class MessageFromFriend(QtGui.QLabel):
         self.setMinimumSize(90, 40)
         self.setStyleSheet(' background: #FBFAF9; color: #555555;'
                            ' border-radius: 10px;'
-                           ' border: none;border-bottom: 1.5px solid #E2E4E3')
-
-class MessageFromFriendTestWidget(QtGui.QLabel):
+                           ' border: none;border-bottom: 1.4px solid #E2E4E3')
+class MessageFromFriendWidget(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         #self.setContentsMargins(5, 5, 5, 5)
         self.setMinimumSize(300, 40)
+        self.setMinimumSize(600, 100)
         #self.setMaximumWidth(600)
-        self.adjustSize()
+        #self.adjustSize()
         self.setStyleSheet('border: none; background: transparent; color: #555555;')
 
         self.containerLayout = HLayout()
         self.containerLayout.setAlignment(QtCore.Qt.AlignLeft)
-        #self.containerLayout.setContentsMargins(10,5,10,5)
+        self.containerLayout.setContentsMargins(10,0,10,0)
         self.setLayout(self.containerLayout)
                     # /  left /   top  /   right /  bottom  /
 
@@ -565,9 +560,9 @@ class MessageFromFriendTestWidget(QtGui.QLabel):
         self.FriendLogoLayoutbyMessage.addWidget(self.FriendLogoWidgetbyMessage)
 
 
-
         self.LabelMessageWidget = MessageFromFriend()
         self.containerLayout.addWidget(self.LabelMessageWidget)
+# ...............End  create Pattern Message.................
 
 
 
@@ -597,7 +592,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.statusAuthorization = False
 
         self.act = action.A()
-
+        self.localTime = strftime("%I:%M", time.localtime())
 
 
         class buttonSendMessage(ButtonSendMessage):
@@ -792,8 +787,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.rightHeader.setMinimumSize(280, 55)
         self.rightHeader.setMaximumSize(1000, 55)
-        self.rightHeader.setStyleSheet('border:none;border-left: 1.5px solid #D6D6D6;'
-                                       ' border-bottom: 1.5px solid #D6D6D6; background: #fdfcfc;')
+        self.rightHeader.setStyleSheet('border:none;'
+                                       ' border-bottom: 1px solid #D6D6D6; background: #fdfcfc;')
 
         self.labelNameUserReightHeader = QtGui.QLabel('Nicolai Komar')
         self.labelNameUserReightHeader.setStyleSheet('color : #5d5d5d; font:  Arial;'
@@ -1021,33 +1016,20 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.thread.start()
 
     def addMessageFromFriend(self,i):
-        #try:
-            #self.leftMessageFromFriend = MessageFromFriend('Process ' + str(i))
-            #self.layoutForRightArea.addWidget(self.leftMessageFromFriend)
+        self.testWidget = MessageFromFriendWidget()
 
-            self.testWidget = MessageFromFriendTestWidget()
+        self.testWidget.LabelMessageWidget.setText('Process_' + str(i)+ '__' +self.localTime)
+        self.layoutForRightArea.addWidget(self.testWidget)
 
-            self.testWidget.LabelMessageWidget.setText('Process ' + str(i))
-            self.layoutForRightArea.addWidget(self.testWidget)
 
-            #self.layoutForleftArea.addWidget(self.testWidget)
-
-        #except :
-            #print '............. error....................'
 
     def send_message(self):
-        try:
-            self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
+        self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
 
-            #self.leftMessageByMe = MessageSendByMe(str(self.inputWidgetForSendMessage.text()))
-            #self.layoutForRightArea.addWidget(self.leftMessageByMe)
+        self.messageByMeWidget = MessageSendByMeWidget()
+        self.messageByMeWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text())+ '___' +self.localTime)
+        self.layoutForRightArea.addWidget(self.messageByMeWidget)
 
-            self.messageByMetestWidget = MessageSendByMeWidget()
-            self.messageByMetestWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text()))
-            self.layoutForRightArea.addWidget(self.messageByMetestWidget)
-
-        except:
-            print '............. error....................'
 
 
 
