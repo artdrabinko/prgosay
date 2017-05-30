@@ -78,6 +78,12 @@ class EmptyBoxWidget(QtGui.QLabel):
         self.setStyleSheet('color: #ffffff; border: none;')
 
 
+
+
+
+
+
+
 class ButtonBackRegistrationWidget(QtGui.QPushButton):
     def __init__(self, parent=None):
         QtGui.QPushButton.__init__(self, parent)
@@ -117,44 +123,52 @@ class ButtonBackRegistrationWidget(QtGui.QPushButton):
         self.setStyleSheet('background: #5181b8;')
         # self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
 
+
+
+class ButtonAttachFile(QtGui.QPushButton):
+    def __init__(self, parent=None):
+        QtGui.QPushButton.__init__(self, parent)
+        self.setMaximumSize(46, 46)
+        self.setMinimumSize(46, 46)
+        self.setStyleSheet('border: none;margin: 0px 0px 0px 0px;  background-image: url(./img/button_attach_in.png); background-repeat: no-repeat ;')
+
+    def mousePressEvent(self, event):
+        self.setStyleSheet('border: none;margin: 0px 10px 0px 0px; background-image: url(./img/button_attach_in.png); background-repeat: no-repeat ;')
+
+    def mouseReleaseEvent(self, event):
+        self.setStyleSheet('border: none;margin: 0px 10px 0px 0px; background-image: url(./img/button_attach_in.png); background-repeat: no-repeat ;')
+
+    def enterEvent(self, event):
+        self.setStyleSheet('border: none;margin: 0px 10px 0px 0px; background-image: url(./img/button_attach_in.png); background-repeat: no-repeat ;')
+        self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+
+    def leaveEvent(self, event):
+        self.setStyleSheet('border: none; margin: 0px 10px 0px 0px; background-image: url(./img/button_attach_in.png); background-repeat: no-repeat ;')
+
+
+
+
+
+
 class ButtonSendMessage(QtGui.QPushButton):
     def __init__(self, parent=None):
         QtGui.QPushButton.__init__(self, parent)
-        self.setMaximumSize(40, 40)
-        self.setMinimumSize(40, 40)
-        icon = QtGui.QIcon('back_button.png')
-        self.setIcon(icon)
-        self.setIconSize(QtCore.QSize(30, 40))
-        self.setStyleSheet('background: #5181b8; margin: 15px;')
+        self.setMaximumSize(46, 46)
+        self.setMinimumSize(46, 46)
+        self.setStyleSheet('border: none;margin: 0px 10px 0px 0px;  background-image: url(./img/button_send_out.png); background-repeat: no-repeat ;')
 
     def mousePressEvent(self, event):
-        icons = QtGui.QIcon('button_back_hover.png')
-        self.setIcon(icons)
-        self.setIconSize(QtCore.QSize(40, 40))
-        self.setStyleSheet('background: #5181b8;')
-        print'press send message'
+        self.setStyleSheet('border: none;margin: 0px 5px 0px 0px; background-image: url(./img/button_send_in.png); background-repeat: no-repeat ;')
 
     def mouseReleaseEvent(self, event):
-        icons = QtGui.QIcon('button_back_hover.png')
-        self.setIcon(icons)
-        self.setIconSize(QtCore.QSize(45, 45))
-        self.setStyleSheet('background: #5181b8;')
+        self.setStyleSheet('border: none;margin: 0px 10px 0px 0px; background-image: url(./img/button_send_in.png); background-repeat: no-repeat ;')
 
     def enterEvent(self, event):
-        # self.setStyleSheet('background-color: #6e9cd0; color: #ffffff; border: none;')
-        icons = QtGui.QIcon('button_back_hover.png')
-        self.setIcon(icons)
-        self.setIconSize(QtCore.QSize(45, 45))
-        self.setStyleSheet('background: #5181b8;')
+        self.setStyleSheet('border: none;margin: 0px 10px 0px 0px; background-image: url(./img/button_send_in.png); background-repeat: no-repeat ;')
         self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
-        # print 'enterEvent press'
 
     def leaveEvent(self, event):
-        icon = QtGui.QIcon('back_button.png')
-        self.setIcon(icon)
-        self.setIconSize(QtCore.QSize(30, 40))
-        self.setStyleSheet('background: #5181b8;')
-        # self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
+        self.setStyleSheet('border: none; margin: 0px 10px 0px 0px; background-image: url(./img/button_send_out.png); background-repeat: no-repeat ;')
 
 
 class ButtonMenuWidget(QtGui.QPushButton):
@@ -198,6 +212,12 @@ class ButtonMenuWidget(QtGui.QPushButton):
         # self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
 
 
+
+
+
+
+
+
 class inputSearchWidget(QtGui.QLineEdit):
     def __init__(self, parent=None):
         QtGui.QLineEdit.__init__(self, parent)
@@ -239,8 +259,8 @@ class inputSendMessageWidget(QtGui.QLineEdit):
         QtGui.QLineEdit.__init__(self, parent)
         self.setMouseTracking(True)
         self.setMinimumSize(290, 48)
-        self.setMaximumSize(500, 48)
-        self.setStyleSheet('margin: 1px 10px 1px 10px; background-color: #ffffff;'
+        self.setMaximumHeight(48)
+        self.setStyleSheet('margin: 0px 10px 0px 10px; background-color: #ffffff;'
                            ' font-size: 16px; padding-left: 10px; color: #b4a3b3;'
                            ' border: 1px solid #E0E0E0; border-radius: 4px;')
         self.setText('Write a message...')
@@ -602,8 +622,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         class buttonSendMessage(ButtonSendMessage):
             def mousePressEvent(parent, event):
-                print'\nWas be send buttonSendMessage:\n'
+                #print'\nWas be send buttonSendMessage:\n'
                 self.send_message()
+
+        class buttonAttachFile(ButtonAttachFile):
+            def mousePressEvent(parent, event):
+                print 'open directory'
+                self.showAttachDialog()
 
         class buttonLogin(buttonLogin0):
             def mousePressEvent(parent, event):
@@ -811,9 +836,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.rightArea.setWidgetResizable(True)
         self.rightArea.setMinimumSize(300, 400)
         self.rightArea.setContentsMargins(0, 0, 0, 0)
-        #self.rightArea.setStyleSheet('border:none; background: transparent;')
         self.rightArea.adjustSize()
-        #self.rightArea.adjustSize()
         self.rightArea.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
         self.rightArea.setStyleSheet("""QScrollArea{
                                             border-right:3px solid #111;
@@ -866,7 +889,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
                                                                                
                                           """)
 
-        #self.rightArea.setStyleSheet('border:1px solid #111; background: transparent;')
+        #self.rightArea.setStyleSheet('border:none; background: transparent;')
 
 
         self.rightArea.setAlignment(QtCore.Qt.AlignCenter)
@@ -883,22 +906,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
-
-#...................Start thread.....................
-
-
-        self.start_btn = QtGui.QPushButton("Start", self)
-        self.start_btn.clicked.connect(self.start)
-
-# ....................Stop thread.....................
-
-
-
-
-
+        self.buttonAttachFile = buttonAttachFile()
         self.inputWidgetForSendMessage = InputLineForSendMessage()
         self.buttonSendMessage = buttonSendMessage()
-        layoutForRightWidgetSendMessage.addWidget(self.start_btn)
+
+
+
+        layoutForRightWidgetSendMessage.addWidget(self.buttonAttachFile)
         layoutForRightWidgetSendMessage.addWidget(self.inputWidgetForSendMessage)
         layoutForRightWidgetSendMessage.addWidget(self.buttonSendMessage)
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -939,6 +953,39 @@ class MainAuthenticationWindow(QtGui.QWidget):
         print 'llll'
         self.resize(600, 500)
         print '.........time'
+
+    def showAttachDialog(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', '/home/art/Desktop/')
+        print fname
+        f = open(fname, 'r')
+        with f:
+            data = f.read()
+            self.prin = data
+            f.close()
+
+
+        di = open('/home/art/Documents/test.png', 'wb')
+        di.write(bytes(self.prin))
+        di.close()
+
+
+
+        self.testWidge = MessageFromFriendWidget()
+        self.testWidge.setStyleSheet('background: transparent; border: none;')
+        self.testWidge.setMaximumHeight(200)
+        self.testWidge.LabelMessageWidget.setStyleSheet(' background-image: url(/home/art/Documents/test.png); background-repeat: no-repeat;')
+        self.testWidge.LabelMessageWidget.setMaximumHeight(200)
+        self.layoutForRightArea.addWidget(self.testWidge)
+        self.buttonAttachFile.setFocus(False)
+        self.inputWidgetForSendMessage.setFocus(True)
+        #text, ok = QInputDialog.getText(self, 'Input Dialog',
+        #                                'Enter your name:')
+       # if ok:
+          #  print 'ok'
+
+
+
+
 
     def closeEvent(self, event):
         messbox =QtGui.QMessageBox()
@@ -1087,19 +1134,26 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
     def send_message(self):
-        self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
+        if self.inputWidgetForSendMessage.text() == 'Write a message...' or self.inputWidgetForSendMessage.text() == '':
+            self.inputWidgetForSendMessage.clear()
+            self.buttonSendMessage.setFocus(False)
+            self.inputWidgetForSendMessage.setFocus(True)
+        else:
+            self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
 
-        self.messageByMeWidget = MessageSendByMeWidget()
-        self.messageByMeWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text())+ '___' +self.localTime)
-        self.layoutForRightArea.addWidget(self.messageByMeWidget)
+            self.messageByMeWidget = MessageSendByMeWidget()
+            self.messageByMeWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text())+ '___' +self.localTime)
+            self.layoutForRightArea.addWidget(self.messageByMeWidget)
 
 
-        self.empt = QtGui.QWidget()
-        self.empt.setMinimumSize(200,14)
-        self.empt.setStyleSheet('border: none')
-        self.layoutForRightArea.addWidget(self.empt)
-        self.inputWidgetForSendMessage.clear()
-        self.inputWidgetForSendMessage.setText('Write a message...')
+            self.empt = QtGui.QWidget()
+            self.empt.setMinimumSize(200,14)
+            self.empt.setStyleSheet('border: none')
+            self.layoutForRightArea.addWidget(self.empt)
+            self.inputWidgetForSendMessage.clear()
+
+            self.buttonSendMessage.setFocus(False)
+            self.inputWidgetForSendMessage.setFocus(True)
 
 
 
