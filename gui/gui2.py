@@ -623,7 +623,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
                     parent.setStyleSheet('margin: 1px 10px 1px 10px;'
                                        ' background-color: #ffffff; '
                                        'font-size: 14px; padding-left: 10px;'
-                                       ' color: #3A3131; border: 1px solid #E0E0E0;'
+                                       ' color: #3A3131; border: 1.4px solid #C5E2AD;'
                                        '  border-radius: 3.5px;')
 
         class HeaderRegistration(HeaderRegistrationWidget):
@@ -788,7 +788,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.rightHeader.setStyleSheet('border:none;'
                                        ' border-bottom: 1px solid #D6D6D6; background: #fdfcfc;')
 
-        self.labelNameUserReightHeader = QtGui.QLabel('Nicolai Komar')
+        #self.labelNameUserReightHeader = QtGui.QLabel('Nicolai Komar')
+        self.labelNameUserReightHeader = QtGui.QLabel()
         self.labelNameUserReightHeader.setStyleSheet('color : #5d5d5d; font:  Arial;'
                                                      'font-size: 25px;border:none;')
         self.labelNameUserReightHeader.setMinimumSize(170, 50)
@@ -997,6 +998,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftWidget.setVisible(self.statusConnection)
         self.rightWidget.setVisible(self.statusConnection)
 
+        self.labelNameUserReightHeader.setText(self.inputLineForLoginUser.text())
 
 
 

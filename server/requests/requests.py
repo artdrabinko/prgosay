@@ -83,23 +83,23 @@ def searchUserByNameOrLogin(DATA):
 
 
 
-def logInReqhuestUpdateUserStatus(login):
-    print 'updateUserStatus in DB'
+def logInRequestUpdateUserStatus(login):
+    print 'logInRequestUpdateUserStatus in DB'
     connDB = connect()
-    reqistrationRequest = 'update users set status_conn = \"Online\" where login = \"' + str(login) + '\"'
+    request = 'update users set status_conn = \"Online\" where login = \"' + str(login) + '\"'
     a = connDB.cursor()
-    print reqistrationRequest
-    a.execute(reqistrationRequest)
+    print request
+    a.execute(request)
     connDB.commit()
     connDB.close()  
 
-def logOutReqhuestUpdateUserStatus(login):
-    print 'logOutReqhuestUpdateStatus in DB'
+def logOutRequestUpdateUserStatus(login):
+    print 'logOutRequestUpdateStatus in DB'
     connDB = connect()
-    reqistrationRequest = 'update users set conn =  \"no\", status_conn = \"Offline\"' + ' where login = \"' + str(login) + '\"'
+    request = 'update users set status_conn = \"Offline\" where login = \"' + str(login) + '\"'
     a = connDB.cursor()
-    print reqistrationRequest
-    a.execute(reqistrationRequest)
+    print request
+    a.execute(request)
     connDB.commit()
     connDB.close()  
 
@@ -112,20 +112,17 @@ def searchUserByLoginAndCheckPassword(login, heshFromPassword):
     a = connDB.cursor()
     a.execute(requestSearchByLogin)
     responseSearchByLogin = a.fetchall()
-
     print str(responseSearchByLogin)
-    
-    
+
     if (responseSearchByLogin != []):
         if(heshFromPassword == responseSearchByLogin[0][1]):
             statusLogin = True
             connDB.close()
-            logInReqhuestUpdateUserStatus(login)
+            logInRequestUpdateUserStatus(login)
         else: 
             statusLogin = False
             connDB.close()
             print 'else'
-        
     else:
         connDB.close()
         print 'There is no such user with login'

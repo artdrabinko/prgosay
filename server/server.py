@@ -73,12 +73,12 @@ class PubProtocol(basic.LineReceiver):
         #listConnections.append()
         self.factory.clients.add(self)
         self.conn = self.transport.getPeer()
-        print self.conn
+        #print self.conn
         for client in  self.factory.clients:
-            print client
+            #print client
             self.cl = client
             #break
-        print self.cl
+        #print self.cl
         #self.factory.numConnections += 1
         f = open('/home/art/Documents/alisapublickey.txt','rb')
         publicKey = f.read(); f.close()
@@ -103,31 +103,48 @@ class PubProtocol(basic.LineReceiver):
 
     def connectionLost(self, reason):
         print 'connectionLost'
-        requests.logOutReqhuestUpdateUserStatus(self.userLogin)
+        try:
+            self.factory.listUser.pop(self.userLogin)
+            #del self.factory.listUser[self.userLogin]
+
+        except:
+            print '\nerror pop....................'
+        requests.logOutRequestUpdateUserStatus(self.userLogin)
+
+
         self.factory.clients.remove(self)
 
        
     def dataReceived(self, line):
         if (self.recmessok):
             print line
-            conn = searchActionUserByLoginInDB('admin')
+            #conn = searchActionUserByLoginInDB('admin')
             #conn.sendLine('heeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+            print '\nUser %s wants send message' % self.userLogin
             try:
-                self.factory.listUser['2'].sendLine('samsebe shli')
+                if(self.userLogin == 'admin'):
+                    self.factory.listUser['2'].sendLine(line)
+                    print 'User %s  send message\n' % self.userLogin
+                if (self.userLogin == '2'):
+                    self.factory.listUser['admin'].sendLine(line)
+                    print 'User %s  send message\n' % self.userLogin
             except:
                 print 'error admin'
+
+
+
             for client in self.factory.clients:
                 if(client == self.cl):
-                    print  client
+                    #print  client
                     print  self.cl
-                    print 'sovpalo mne ono ne nado!'
+                    #print 'sovpalo mne ono ne nado!'
                     #client.sendLine('sovpalo')
                 else:
-                    print '\n' + str(client)
-                    print  self.cl
+                    #print '\n' + str(client)
+                    #print  self.cl
                     print 'nesovpalo'
                     #client.sendLine('message from' + str(self.cl) + ' friend' + str(line))
-                    client.sendLine('From friend: ' + str(line))
+                    #client.sendLine('From friend: ' + str(line))
 
 
         if(self.statusConnection != True):
@@ -192,8 +209,8 @@ class PubProtocol(basic.LineReceiver):
             obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
             clientMessage = pickle.loads(obj.decrypt(message[0][0]))
 
-            self.statusAuthorithation = loginActionFromUser(clientMessage[1], getHashMD5(clientMessage[2]), self.cl )
-            #self.statusAuthorithation
+            self.statusAuthorithation = loginActionFromUser(clientMessage[1], getHashMD5(clientMessage[2]))
+
             if(self.statusAuthorithation):
                 self.userLogin = clientMessage[1]
 
