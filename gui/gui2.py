@@ -764,8 +764,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
-
-
         # ...................Start content self.rightWidget.............................
         self.rightWidget = QtGui.QLabel()
         self.rightWidget.setMinimumSize(300, 470)
