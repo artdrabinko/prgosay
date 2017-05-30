@@ -191,7 +191,7 @@ class A():
         self.sock.send(clientLoginMessage)
         data = self.sock.recv(2048)
         
-        serverMessage = pickle.loads(data)
+        serverMessage = pickle.loads(str(data))
         
         obj = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
         statusLoginMessage = pickle.loads(obj.decrypt(serverMessage[0][0]))

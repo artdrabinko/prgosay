@@ -81,20 +81,20 @@ def searchUserByNameOrLogin(DATA):
         return searchByName(DATA)
 
 
-def updateUserStatus(login,conn):
-    print 'registrationUserRequest to DB'
+
+
+def logInReqhuestUpdateUserStatus(login):
+    print 'updateUserStatus in DB'
     connDB = connect()
-    reqistrationRequest = 'update users set status_conn = \"Online\", conn = \"' + str(conn) + '\" where login = \"' + str(login) + '\"'
-                        #update users set conn = "no", status_conn = "offline" WHERE uid = 3;
-    
+    reqistrationRequest = 'update users set status_conn = \"Online\" where login = \"' + str(login) + '\"'
     a = connDB.cursor()
     print reqistrationRequest
     a.execute(reqistrationRequest)
     connDB.commit()
     connDB.close()  
 
-def logOutReqhuestUpdateStatus(login):
-    print 'registrationUserRequest to DB'
+def logOutReqhuestUpdateUserStatus(login):
+    print 'logOutReqhuestUpdateStatus in DB'
     connDB = connect()
     reqistrationRequest = 'update users set conn =  \"no\", status_conn = \"Offline\"' + ' where login = \"' + str(login) + '\"'
     a = connDB.cursor()
@@ -104,16 +104,15 @@ def logOutReqhuestUpdateStatus(login):
     connDB.close()  
 
 
-     
-def searchUserByLoginAndCheckPassword(login, heshFromPassword,conn):
+
+def searchUserByLoginAndCheckPassword(login, heshFromPassword):
     connDB = connect()
-    
     requestSearchByLogin = 'select login, passwd from users where login = \"' + str(login) + '\"'
     print '\n' + requestSearchByLogin + '\n'
     a = connDB.cursor()
     a.execute(requestSearchByLogin)
-    
     responseSearchByLogin = a.fetchall()
+
     print str(responseSearchByLogin)
     
     
@@ -121,13 +120,11 @@ def searchUserByLoginAndCheckPassword(login, heshFromPassword,conn):
         if(heshFromPassword == responseSearchByLogin[0][1]):
             statusLogin = True
             connDB.close()
-            updateUserStatus(login,conn)
+            logInReqhuestUpdateUserStatus(login)
         else: 
             statusLogin = False
             connDB.close()
             print 'else'
-        #print responseSearchByLogin[0][1]
-        #print heshFromPassword
         
     else:
         connDB.close()
@@ -135,6 +132,34 @@ def searchUserByLoginAndCheckPassword(login, heshFromPassword,conn):
         statusLogin = False
 
     return statusLogin
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -147,19 +172,44 @@ def registrationUserRequest(DATA):
     a.execute(reqistrationRequest)
     connDB.commit()
     connDB.close()   
-    
+
+
+
+
+def searchConnectionByLogin(login):
+    connDB = connect()
+
+    requestSearchByLogin = 'select conn from users where login = \"' + str(login) + '\"'
+    a = connDB.cursor()
+    a.execute(requestSearchByLogin)
+    responseSearchConnectionByLogin = a.fetchall()
+    print responseSearchConnectionByLogin
+
+    connDB.close()
+    return responseSearchConnectionByLogin[0][0]
+
+
+
+
+
+
+
+
+
 class ThreadDB(threading.Thread):
-        def run(self):
-            count = 0
-            print'............ThreadDB on................'
-            while(True):
-                print time.ctime()
-                time.sleep(0.1)
-                count = count + 1
-                if(count == 1):break
-        #print 'thread was stop.............'
-	    
+    def run(self):
+        count = 0
+        print'............ThreadDB on................'
+        while (True):
+            print time.ctime()
+            time.sleep(0.1)
+            count = count + 1
+            if (count == 1): break
+            # print 'thread was stop.............'
+
 def StartThreadSearchDB():
     newThread = ThreadDB()
     newThread.start()
+
+
 

@@ -37,17 +37,21 @@ def getHashMD5(text):
     return result
  
  
-def loginActionFromUser(login, heshFromPassword, conn):
+def loginActionFromUser(login, heshFromPassword):
         listForRegestration = []
         listForRegestration.append(str(login))
         listForRegestration.append(str(heshFromPassword))
         print listForRegestration
-        print conn
-
-        statusLoginUser = requests.searchUserByLoginAndCheckPassword(login, heshFromPassword, conn)
-
+        statusLoginUser = requests.searchUserByLoginAndCheckPassword(login, heshFromPassword)
 
         return statusLoginUser
+
+def searchActionUserByLoginInDB(login):
+    conn = requests.searchConnectionByLogin(login)
+    print type(conn)
+    print '\n searchActionUserByLoginInDB ' + str(conn) + '\n'
+    return conn
+
 
 
 class PubProtocol(basic.LineReceiver):
@@ -99,13 +103,19 @@ class PubProtocol(basic.LineReceiver):
 
     def connectionLost(self, reason):
         print 'connectionLost'
-        requests.logOutReqhuestUpdateStatus(self.userLogin)
+        requests.logOutReqhuestUpdateUserStatus(self.userLogin)
         self.factory.clients.remove(self)
 
        
     def dataReceived(self, line):
         if (self.recmessok):
             print line
+            conn = searchActionUserByLoginInDB('admin')
+            #conn.sendLine('heeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+            try:
+                self.factory.listUser['2'].sendLine('samsebe shli')
+            except:
+                print 'error admin'
             for client in self.factory.clients:
                 if(client == self.cl):
                     print  client
@@ -181,11 +191,22 @@ class PubProtocol(basic.LineReceiver):
             message= pickle.loads(line)
             obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
             clientMessage = pickle.loads(obj.decrypt(message[0][0]))
-            #print clientMessage
+
             self.statusAuthorithation = loginActionFromUser(clientMessage[1], getHashMD5(clientMessage[2]), self.cl )
             #self.statusAuthorithation
             if(self.statusAuthorithation):
                 self.userLogin = clientMessage[1]
+
+                self.factory.listUser[self.userLogin] = self.cl
+                print '..............Start list login User.....................'
+                print  self.factory.listUser
+                try:
+                    print 'login registred user'
+                    print  self.factory.listUser[self.userLogin]
+                except:
+                    print 'error admin'
+
+                print '..............End list login User.....................'
             obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
             Message = []
             listMess = []
@@ -211,12 +232,12 @@ class PubProtocol(basic.LineReceiver):
                     print  client
                     print  self.cl
                     print 'sovpalo'
-                    client.sendLine('sovpalo')
+                    #client.sendLine('sovpalo')
                 else:
                     print '\n' + str(client)
                     print  self.cl
                     print 'nesovpalo'
-                    self.sendLine('eeeeeeeeeees!')
+                    #self.sendLine('eeeeeeeeeees!')
             self.recmessok = True
 
 
@@ -226,7 +247,7 @@ class PubFactory(protocol.Factory):
     listConnections = []    
     ServerCerificateMessage = []
     ServerCerificateMessage[:] = []
-    
+    listUser = {}
 
     def __init__(self):
         print '......new connection....'
