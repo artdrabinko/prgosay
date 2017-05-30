@@ -133,20 +133,6 @@ class PubProtocol(basic.LineReceiver):
 
 
 
-            for client in self.factory.clients:
-                if(client == self.cl):
-                    #print  client
-                    print  self.cl
-                    #print 'sovpalo mne ono ne nado!'
-                    #client.sendLine('sovpalo')
-                else:
-                    #print '\n' + str(client)
-                    #print  self.cl
-                    print 'nesovpalo'
-                    #client.sendLine('message from' + str(self.cl) + ' friend' + str(line))
-                    #client.sendLine('From friend: ' + str(line))
-
-
         if(self.statusConnection != True):
             #statusConnection = self.statusConnection
             privatkey = RSA.importKey(open('/home/art/Documents/alisaprivatekey.txt').read())

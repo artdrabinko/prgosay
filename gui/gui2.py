@@ -238,32 +238,38 @@ class inputSendMessageWidget(QtGui.QLineEdit):
     def __init__(self, parent=None):
         QtGui.QLineEdit.__init__(self, parent)
         self.setMouseTracking(True)
-        self.setMinimumSize(290, 42)
-        self.setMaximumSize(500, 42)
+        self.setMinimumSize(290, 48)
+        self.setMaximumSize(500, 48)
         self.setStyleSheet('margin: 1px 10px 1px 10px; background-color: #ffffff;'
-                           ' font-size: 14px; padding-left: 10px; color: #b4a3b3;'
-                           ' border: 1px solid #E0E0E0; border-radius: 3.5px;')
+                           ' font-size: 16px; padding-left: 10px; color: #b4a3b3;'
+                           ' border: 1px solid #E0E0E0; border-radius: 4px;')
         self.setText('Write a message...')
+
+    def mousePressEvent(self, event):
+        self.setStyleSheet('margin: 1px 10px 1px 10px;background-color: #ffffff;'
+                           ' font-size: 16px; padding-left: 10px; color: #3A3131;'
+                           ' border: 1px solid #B3E08E;  border-radius: 4px;')
 
     def focusOutEvent(self, event):
         if (len(self.text()) == 0):
             self.setStyleSheet('margin: 1px 10px 1px 10px; background-color: #ffffff; '
-                               'font-size: 14px; padding-left: 10px; color: #b4a3b3; '
-                               ' border: 1px solid #E0E0E0; border-radius: 3.5px;')
+                               'font-size: 16px; padding-left: 10px; color: #b4a3b3; '
+                               ' border: 1px solid #E0E0E0; border-radius: 4px;')
             self.setText('Write a message...')
             self.setCursorPosition(0)
         else:
             self.setStyleSheet(
-                'margin: 1px 10px 1px 10px; background-color: #ffffff; font-size: 14px;'
-                'padding-left: 10px; color: #3A3131; border: 1px solid #E0E0E0;'
-                ' border-radius: 3.5px;')
+                            'margin: 1px 10px 1px 10px; background-color: #ffffff; '
+                            'font-size: 16px;'
+                            'padding-left: 10px; color: #3A3131; border: 1px solid #E0E0E0;'
+                            ' border-radius: 4px;')
 
     def focusInEvent(self, event):
         if (self.text() == 'Write a message...'):
             self.clear()
         self.setStyleSheet('margin: 1px 10px 1px 10px;background-color: #ffffff;'
-                           ' font-size: 14px; padding-left: 10px; color: #3A3131;'
-                           ' border: 1px solid #E0E0E0;  border-radius: 3.5px;')
+                           ' font-size: 16px; padding-left: 10px; color: #3A3131;'
+                           ' border: 1px solid #B3E08E;  border-radius: 4px;')
 
 
 class HeaderRegistrationWidget(QtGui.QLabel):
@@ -499,7 +505,7 @@ class MessageSendByMeWidget(QtGui.QLabel):
 
         self.containerLayout = HLayout()
         self.containerLayout.setAlignment(QtCore.Qt.AlignRight)
-        #self.containerLayout.setContentsMargins(10,5,10,5)
+        self.containerLayout.setContentsMargins(10,0,10,0)
         self.setLayout(self.containerLayout)
                     # /  left /   top  /   right /  bottom  /
 
@@ -585,8 +591,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.setMinimumSize(300, 480)
         self.setMaximumSize(310, 480)
 
-        self.setStyleSheet('background-color: #5181b8; border-style: solid;'
-                           ' border-color: #363333; border-width: 1px')
+        self.setStyleSheet('background-color: #5181b8; border: none;')
 
         self.statusConnection = False
         self.statusAuthorization = False
@@ -622,9 +627,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
                     parent.clear()
                     parent.setStyleSheet('margin: 1px 10px 1px 10px;'
                                        ' background-color: #ffffff; '
-                                       'font-size: 14px; padding-left: 10px;'
-                                       ' color: #3A3131; border: 1.4px solid #C5E2AD;'
-                                       '  border-radius: 3.5px;')
+                                       'font-size: 16px; padding-left: 10px;'
+                                       ' color: #3A3131; border: 1px solid #B3E08E;'
+                                       '  border-radius: 4px;')
 
         class HeaderRegistration(HeaderRegistrationWidget):
             def __init__(self, parent=None):
@@ -663,7 +668,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         # ...................Start content Registration Form.............................
         self.RegistrationHeader = HeaderRegistration()
         self.RegistrationHeader.setContentsMargins(0, 0, 0, 0)
-        self.RegistrationHeader.setStyleSheet('border:1px solid;')
+        self.RegistrationHeader.setStyleSheet('border: none;')
 
         self.emptyLabel0 = QtGui.QLabel('      Registration Form')
         self.emptyLabel0.setStyleSheet(' text-align:right;')
@@ -731,8 +736,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForWidgetsLeftHeader.setAlignment(QtCore.Qt.AlignLeft)
 
         self.leftHeader.setLayout(layoutForWidgetsLeftHeader)
-        self.leftHeader.setMinimumSize(300, 55)
-        self.leftHeader.setMaximumSize(320, 55)
+        self.leftHeader.setMinimumSize(300, 60)
+        self.leftHeader.setMaximumSize(320, 60)
         self.leftHeader.setStyleSheet('border: none; border-bottom: 1px solid #cacfd2;')
 
         self.buttonMenu = ButtonMenuWidget()
@@ -752,6 +757,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.layoutForleftArea = VLayout()
         self.layoutForleftArea.setAlignment(QtCore.Qt.AlignTop)
         self.boxwid.setLayout(self.layoutForleftArea)
+        self.boxwid.setStyleSheet('border: none;')
 
 
 
@@ -770,7 +776,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.rightWidget.adjustSize()
         #self.rightWidget.setMaximumSize(1000, 1000)
         self.rightWidget.setContentsMargins(0, 0, 0, 0)
-        self.rightWidget.setStyleSheet(' border: none; background-image: url(./fon3.png);'
+        self.rightWidget.setStyleSheet(' border: none; background-image: url(./img/fon3.png);'
                                        'border-left: 1px solid #cacfd2;')
         rightWidgetlayout = VLayout()
         rightWidgetlayout.setAlignment(QtCore.Qt.AlignTop)
@@ -783,8 +789,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForWidgetsRightHeader = HLayout()
         self.rightHeader.setLayout(layoutForWidgetsRightHeader)
 
-        self.rightHeader.setMinimumSize(280, 55)
-        self.rightHeader.setMaximumSize(1000, 55)
+        self.rightHeader.setMinimumSize(280, 60)
+        self.rightHeader.setMaximumSize(1000, 60)
         self.rightHeader.setStyleSheet('border:none;'
                                        ' border-bottom: 1px solid #D6D6D6; background: #fdfcfc;')
 
@@ -804,23 +810,73 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.rightArea = QtGui.QScrollArea()
         self.rightArea.setWidgetResizable(True)
         self.rightArea.setMinimumSize(300, 400)
+        self.rightArea.setContentsMargins(0, 0, 0, 0)
+        #self.rightArea.setStyleSheet('border:none; background: transparent;')
         self.rightArea.adjustSize()
         #self.rightArea.adjustSize()
         self.rightArea.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
+        self.rightArea.setStyleSheet("""QScrollArea{
+                                            border-right:3px solid #111;
+                                            background: transparent;
+                                            border: none;
+                                            
+                                        }
+                                        QStatusBar {
+                                            border-left: 4px solid red;
+                                            
+                                        }
+                                        QScrollBar{
+                                             background: transparent;
+                                             border: none;
+                                             
+                                         }
+                                        QScrollBar:vertical {
+                                             background: #E5E5E2;
+                                             width: 10px;
+                                             margin: 0px 5px 0px 0px;
+                                             border: none;
+                                         }
+                                         QScrollBar::handle:vertical {
+                                             border: none;
+                                             background: #A9A9A9;
+                                             min-height: 20px;
+                                             
+                                         }
+                                         QScrollBar::add-line:vertical {
+                                             border: none;
+                                             background: transparent;
+                                             height: 0px;
+                                             subcontrol-position: bottom;
+                                             subcontrol-origin: margin;
+                                         }
+                                        
+                                         QScrollBar::sub-line:vertical {
+                                             border: none;
+                                             background: transparent;
+                                             height: 0px;
+                                             subcontrol-position: top;
+                                             subcontrol-origin: margin;
+                                         }
+                                        
+                                        
+                                         QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                                             background: transparent;
+                                             border: none;
+                                         }
+                                                                               
+                                          """)
 
-
-        self.rightArea.setContentsMargins(0, 0, 0, 0)
-        self.rightArea.setStyleSheet('border:none; background: transparent;')
+        #self.rightArea.setStyleSheet('border:1px solid #111; background: transparent;')
 
 
         self.rightArea.setAlignment(QtCore.Qt.AlignCenter)
         self.rightWidgetForSendMessage = EmptyBoxWidget()
-        self.rightWidgetForSendMessage.setMinimumSize(300, 55)
-        self.rightWidgetForSendMessage.setMaximumSize(1000, 55)
+        self.rightWidgetForSendMessage.setMinimumSize(300, 60)
+        self.rightWidgetForSendMessage.setMaximumSize(1000, 60)
         self.rightWidgetForSendMessage.setStyleSheet('background: #EBEBEB; border: none;'
-                                                     ' border-left: 1.5px solid #D6D6D6;'
-                                                     ' border-top: 1.5px solid #D6D6D6;'
-                                                     'border-bottom: 1.5px solid #D6D6D6;')
+                                                     ' border-left: 1px solid #D6D6D6;'
+                                                     ' border-top: 1px solid #D6D6D6;'
+                                                     'border-bottom: 1px solid #D6D6D6;')
 
         layoutForRightWidgetSendMessage = HLayout()
         self.rightWidgetForSendMessage.setLayout(layoutForRightWidgetSendMessage)
@@ -847,7 +903,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForRightWidgetSendMessage.addWidget(self.buttonSendMessage)
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
         self.boxwidr = QtGui.QLabel()
-        self.boxwidr.setMaximumWidth(550)
+        self.boxwidr.setMaximumWidth(480)
         #self.boxwidr.adjustSize()
         self.rightArea.setWidget(self.boxwidr)
         self.layoutForRightArea = VLayout()
@@ -855,7 +911,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.boxwidr.setLayout(self.layoutForRightArea)
 
         self.boxwidr.setContentsMargins(0, 0, 0, 0)
-        self.boxwidr.setStyleSheet('border:none; background: transparent;')
+        self.boxwidr.setStyleSheet(' background: transparent;')
 
 
         rightWidgetlayout.addWidget(self.rightHeader)
@@ -884,15 +940,18 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.resize(600, 500)
         print '.........time'
 
-    #def closeEvent(self, event):
-        #reply = QtGui.QMessageBox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes,
-             #                              QtGui.QMessageBox.No)
+    def closeEvent(self, event):
+        messbox =QtGui.QMessageBox()
+        messbox.setStyleSheet('background: #111111;border: none;')
 
-        #if reply == QtGui.QMessageBox.Yes:
-        #    main.setVisible(True)
-         #   main.close()
-       # else:
-         #   event.ignore()
+        reply = messbox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes,
+                                          QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            main.setVisible(True)
+            main.close()
+        else:
+            event.ignore()
 
     def pressRegistrationAction(self):
         print 'press ...........start pressRegistrationAction........'
@@ -1021,6 +1080,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.testWidget.LabelMessageWidget.setText('Process_' + str(i)+ '__' +self.localTime)
         self.layoutForRightArea.addWidget(self.testWidget)
 
+        self.emptF = QtGui.QWidget()
+        self.emptF.setMinimumSize(200, 14)
+        self.emptF.setStyleSheet('border: none')
+        self.layoutForRightArea.addWidget(self.emptF)
 
 
     def send_message(self):
@@ -1031,7 +1094,12 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.layoutForRightArea.addWidget(self.messageByMeWidget)
 
 
-
+        self.empt = QtGui.QWidget()
+        self.empt.setMinimumSize(200,14)
+        self.empt.setStyleSheet('border: none')
+        self.layoutForRightArea.addWidget(self.empt)
+        self.inputWidgetForSendMessage.clear()
+        self.inputWidgetForSendMessage.setText('Write a message...')
 
 
 
