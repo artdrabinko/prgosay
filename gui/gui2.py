@@ -534,18 +534,24 @@ class MessageSendByMeWidget(QtGui.QLabel):
         self.MyLogoLayoutbyMessage.setContentsMargins(5, 1, 0, 0)
 
 
-        self.MyLogoWidgetbyMessage = QtGui.QLabel()
-        self.MyLogoWidgetbyMessage.setMinimumSize(36,36)
-        self.MyLogoWidgetbyMessage.setMaximumSize(36,36)
-        self.MyLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/myLogoAboutMessage.png);'
+        MyLogoWidgetbyMessage = QtGui.QLabel()
+        MyLogoWidgetbyMessage.setMinimumSize(36,36)
+        MyLogoWidgetbyMessage.setMaximumSize(36,36)
+        MyLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/myLogoAboutMessage.png);'
                                                      ' border-radius: 18px; border: 1px solid #FFFFFF;')
-        self.MyLogoLayoutbyMessage.addWidget(self.MyLogoWidgetbyMessage)
+        self.MyLogoLayoutbyMessage.addWidget(MyLogoWidgetbyMessage)
 
 
 
         self.LabelMessageWidget = MessageByMe()
         self.containerLayout.addWidget(self.LabelMessageWidget)
         self.containerLayout.addLayout(self.MyLogoLayoutbyMessage)
+
+    def enterEvent(MyLogoWidgetbyMessage, event):
+        MyLogoWidgetbyMessage.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+
+    def mousePressEvent(self, event):
+        print 'olopopopopopop'
 
 
 class MessageFromFriend(QtGui.QLabel):
@@ -967,7 +973,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         di = open('/home/art/Documents/test.png', 'wb')
         di.write(bytes(self.prin))
         di.close()
-
 
 
         self.testWidge = MessageFromFriendWidget()

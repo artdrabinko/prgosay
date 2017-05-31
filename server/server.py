@@ -35,8 +35,7 @@ def getHashMD5(text):
     hash_md5.update(str(text))
     result = hash_md5.hexdigest()
     return result
- 
- 
+
 def loginActionFromUser(login, heshFromPassword):
         listForRegestration = []
         listForRegestration.append(str(login))
@@ -52,74 +51,115 @@ def searchActionUserByLoginInDB(login):
     print '\n searchActionUserByLoginInDB ' + str(conn) + '\n'
     return conn
 
+def createServerCerificateMessage():
+    ServerCerificateMessage = []
+    f = open('/home/art/Documents/alisapublickey.txt', 'rb')
+    publicKey = f.read();
+    f.close()
+
+    listMess = []
+    listHesh = []
+
+    listMess.append('1')
+    listMess.append(publicKey)
+    listMess.append('gosay.net.ru')
+    listMess.append('md5')
+
+    listHesh.append(getHashMD5(listMess))
+
+    ServerCerificateMessage.append(listMess)
+    ServerCerificateMessage.append(listHesh)
+
+    return ServerCerificateMessage
 
 
 class PubProtocol(basic.LineReceiver):
-    
+
     def __init__(self, factory):
         self.factory = factory
         self.userLogin = ''
-        self.recmessok = False
-        self.cl = ''
+        self.seansKey = ''
+        self.iv = Random.new().read(16)  # 128 bit
+
+
         self.statusConnection = False
         self.encripdetConnection = False
         self.statusAuthorithation = False
-        self.seansKey = ''
-        self.iv = Random.new().read(16) # 128 bit
-        #self.conn = ''
+        self.UserLoginStatus = False
 
-   
+
+
     def connectionMade(self):
-        #listConnections.append()
+        newUser = self.transport.getPeer()
         self.factory.clients.add(self)
-        self.conn = self.transport.getPeer()
-        #print self.conn
-        for client in  self.factory.clients:
-            #print client
-            self.cl = client
-            #break
-        #print self.cl
-        #self.factory.numConnections += 1
-        f = open('/home/art/Documents/alisapublickey.txt','rb')
-        publicKey = f.read(); f.close()
-
-        self.listMess = []
-        self.listHesh = []
-        
-        self.listMess.append('1')
-        self.listMess.append(publicKey)
-        self.listMess.append('gosay.net.ru')
-        self.listMess.append('md5')
-
-        self.listHesh.append(getHashMD5(self.listMess))
-        
-        self.factory.ServerCerificateMessage.append(self.listMess)
-        self.factory.ServerCerificateMessage.append(self.listHesh)
-        #print self.factory.ServerCerificateMessage
-        bytesForSend = pickle.dumps(self.factory.ServerCerificateMessage,2)
-
+        print "New user conntection: %s" % newUser
+        bytesForSend = pickle.dumps(createServerCerificateMessage(),2)
         self.transport.write(bytesForSend)
-        self.factory.ServerCerificateMessage[:] = []
+
+    def sendServerKeyExchangeMessage(self, statusConnection):
+        obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
+        listIV = []
+        Message = []
+        listMess = []
+        listHesh = []
+        ExchangeMessage = []
+        listIV.append(self.iv)
+        listMess.append('3')
+        listMess.append(statusConnection)
+
+        Message.append(obj.encrypt(pickle.dumps(listMess, 2)))
+        listHesh.append(getHashMD5(Message))
+
+        ExchangeMessage.append(listIV)
+        ExchangeMessage.append(Message)
+        ExchangeMessage.append(listHesh)
+
+        serverExchangeMessage = pickle.dumps(ExchangeMessage, 2)
+        self.sendLine(serverExchangeMessage)
+
+    def sendServerExchangeMessage(self):
+        obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
+        Message = []
+        listMess = []
+
+        listHesh = []
+
+        ExchangeMessage = []
+
+        listMess.append('5')
+        listMess.append(self.statusAuthorithation)
+        Message.append(obj.encrypt(pickle.dumps(listMess, 2)))
+        listHesh.append(getHashMD5(Message))
+
+        ExchangeMessage.append(Message)
+        ExchangeMessage.append(listHesh)
+        serverExchangeMessage = pickle.dumps(ExchangeMessage, 2)
+        self.sendLine(serverExchangeMessage)
+
+
+
+
+
 
     def connectionLost(self, reason):
         print 'connectionLost'
+        print self.factory.ListOfUsers
         try:
-            self.factory.listUser.pop(self.userLogin)
-            #del self.factory.listUser[self.userLogin]
-
+            requests.logOutRequestUpdateUserStatus(self.userLogin)
+            self.factory.ListOfUsers.pop(self.userLogin)
         except:
-            print '\nerror pop....................'
-        requests.logOutRequestUpdateUserStatus(self.userLogin)
+            print '\n.......................Pop error........................'
 
-
-        self.factory.clients.remove(self)
+        try:
+            self.factory.clients.remove(self)
+        except:
+            print '\n.........self.factory.clients.remove(self)  error........'
+        print self.factory.ListOfUsers
 
        
     def dataReceived(self, line):
-        if (self.recmessok):
+        if (self.UserLoginStatus):
             print line
-            #conn = searchActionUserByLoginInDB('admin')
-            #conn.sendLine('heeeeeeeeeeeeeeeeeeeeeeeeeeeee')
             print '\nUser %s wants send message' % self.userLogin
             try:
                 if(self.userLogin == 'admin'):
@@ -132,7 +172,6 @@ class PubProtocol(basic.LineReceiver):
                 print 'error admin'
 
 
-
         if(self.statusConnection != True):
             #statusConnection = self.statusConnection
             privatkey = RSA.importKey(open('/home/art/Documents/alisaprivatekey.txt').read())
@@ -140,7 +179,7 @@ class PubProtocol(basic.LineReceiver):
             try:
                 print 'try'
                 ReceiveMessage = cipher.decrypt(line)
-                listMessage = messageProcessing(ReceiveMessage)
+                listMessage = pickle.loads(ReceiveMessage)
                 statusDecrypt = True
                 statusConnection = True
             except:
@@ -161,29 +200,10 @@ class PubProtocol(basic.LineReceiver):
             else:
                 clientKeyExchangeMessage = False
                 self.factory.statusConnection  = False
+
             if(clientKeyExchangeMessage and statusConnection):
-                obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
-                listIV = []
-                Message = []
-                listMess = []                
-                listHesh = []
-                ExchangeMessage = []
-                listIV.append(self.iv)
-                listMess.append('3')
-                listMess.append(statusConnection)
-                
-                Message.append(obj.encrypt(pickle.dumps(listMess,2)))
-                listHesh.append(getHashMD5(Message))
-                
-                ExchangeMessage.append(listIV)
-                ExchangeMessage.append(Message)
-                ExchangeMessage.append(listHesh)
-                
-                serverExchangeMessage = pickle.dumps(ExchangeMessage,2)
-                self.sendLine(serverExchangeMessage)
-        
-            #print clientKeyExchangeMessage
-            #print statusConnection
+                self.sendServerKeyExchangeMessage(statusConnection)
+
             self.statusConnection = statusConnection
 
         else:
@@ -200,65 +220,40 @@ class PubProtocol(basic.LineReceiver):
             if(self.statusAuthorithation):
                 self.userLogin = clientMessage[1]
 
-                self.factory.listUser[self.userLogin] = self.cl
+                self.factory.ListOfUsers[self.userLogin] = self
                 print '..............Start list login User.....................'
-                print  self.factory.listUser
+                print  self.factory.ListOfUsers
                 try:
                     print 'login registred user'
-                    print  self.factory.listUser[self.userLogin]
+                    print  self.factory.ListOfUsers[self.userLogin]
                 except:
-                    print 'error admin'
+                    print '.................ERROR...............'
 
                 print '..............End list login User.....................'
-            obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
-            Message = []
-            listMess = []
-            
-            listHesh = []
-            
-            ExchangeMessage = []
-            
-            listMess.append('5')
-            listMess.append(self.statusAuthorithation)
-            #print listMess
-            Message.append(obj.encrypt(pickle.dumps(listMess,2)))
-            listHesh.append(getHashMD5(Message))
-            
-            ExchangeMessage.append(Message)
-            ExchangeMessage.append(listHesh)
-            #print ExchangeMessage
-            serverExchangeMessage = pickle.dumps(ExchangeMessage,2)
-            self.sendLine(serverExchangeMessage)
 
-            for client in self.factory.clients:
-                if(client == self.cl):
-                    print  client
-                    print  self.cl
-                    print 'sovpalo'
-                    #client.sendLine('sovpalo')
-                else:
-                    print '\n' + str(client)
-                    print  self.cl
-                    print 'nesovpalo'
-                    #self.sendLine('eeeeeeeeeees!')
-            self.recmessok = True
+            self.sendServerExchangeMessage()
+            self.UserLoginStatus = True
+
+
+
+
+
+
+
 
 
 
 class PubFactory(protocol.Factory):
-    print '........User......'
-    listConnections = []    
-    ServerCerificateMessage = []
-    ServerCerificateMessage[:] = []
-    listUser = {}
+    print 'Start Factory'
+    listConnections = []
 
     def __init__(self):
-        print '......new connection....'
         self.clients = set()
+        self.ListOfUsers = {}
+
 
     def buildProtocol(self, addr):
         return PubProtocol(self)
-
 
 endpoints.serverFromString(reactor, "tcp:8000").listen(PubFactory())
 reactor.run()
