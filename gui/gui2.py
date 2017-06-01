@@ -78,11 +78,6 @@ class EmptyBoxWidget(QtGui.QLabel):
 
 
 
-
-
-
-
-
 class ButtonBackRegistrationWidget(QtGui.QPushButton):
     def __init__(self, parent=None):
         QtGui.QPushButton.__init__(self, parent)
@@ -257,7 +252,7 @@ class inputSendMessageWidget(QtGui.QLineEdit):
     def __init__(self, parent=None):
         QtGui.QLineEdit.__init__(self, parent)
         self.setMouseTracking(True)
-        self.setMinimumSize(290, 48)
+        self.setMinimumSize(60, 48)
         self.setMaximumHeight(48)
         self.setStyleSheet('margin: 0px 10px 0px 10px; background-color: #ffffff;'
                            ' font-size: 16px; padding-left: 10px; color: #b4a3b3;'
@@ -496,51 +491,47 @@ class Worker(QObject):
 
         self.finished.emit()
 
-
-
-
-
-
-#...............Create Pattern Message......................
+        # ...............Create Pattern Message......................
 class MessageByMe(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
         self.setMinimumSize(90, 40)
-        #self.setContentsMargins(5, 5, 5, 5)
+        # self.setContentsMargins(5, 5, 5, 5)
         self.setStyleSheet(' background: #EFFDDE; color: #555555;'
                            ' border-radius: 10px;'
                            ' border: none;border-bottom: 1.4px solid #C5E2AD;')
+
 class MessageSendByMeWidget(QtGui.QLabel):
+
     def __init__(self, parent=None):
+        self.meth = QtGui.QScrollArea()
+        self.meth.setVisible(False)
         QtGui.QLabel.__init__(self, parent)
-        #self.setContentsMargins(5, 5, 5, 5)
+        # self.setContentsMargins(5, 5, 5, 5)
         self.setMinimumSize(300, 40)
-        #self.setMaximumWidth(600)
+        # self.setMaximumWidth(600)
         self.setWordWrap(True)
         self.adjustSize()
         self.setStyleSheet('border: none; background: transparent; color: #555555;')
 
         self.containerLayout = HLayout()
         self.containerLayout.setAlignment(QtCore.Qt.AlignRight)
-        self.containerLayout.setContentsMargins(10,0,10,0)
+        self.containerLayout.setContentsMargins(10, 0, 10, 0)
         self.setLayout(self.containerLayout)
-                    # /  left /   top  /   right /  bottom  /
+        # /  left /   top  /   right /  bottom  /
 
         self.MyLogoLayoutbyMessage = VLayout()
         self.MyLogoLayoutbyMessage.setAlignment(QtCore.Qt.AlignTop)
         self.MyLogoLayoutbyMessage.setContentsMargins(5, 1, 0, 0)
 
-
         MyLogoWidgetbyMessage = QtGui.QLabel()
-        MyLogoWidgetbyMessage.setMinimumSize(36,36)
-        MyLogoWidgetbyMessage.setMaximumSize(36,36)
+        MyLogoWidgetbyMessage.setMinimumSize(36, 36)
+        MyLogoWidgetbyMessage.setMaximumSize(36, 36)
         MyLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/myLogoAboutMessage.png);'
-                                                     ' border-radius: 18px; border: 1px solid #FFFFFF;')
+                                            ' border-radius: 18px; border: 1px solid #FFFFFF;')
         self.MyLogoLayoutbyMessage.addWidget(MyLogoWidgetbyMessage)
-
-
 
         self.LabelMessageWidget = MessageByMe()
         self.containerLayout.addWidget(self.LabelMessageWidget)
@@ -551,6 +542,10 @@ class MessageSendByMeWidget(QtGui.QLabel):
 
     def mousePressEvent(self, event):
         print 'olopopopopopop'
+        if(self.meth.isVisible()):
+            self.meth.setVisible(False)
+        else:
+            self.meth.setVisible(True)
 
 
 class MessageFromFriend(QtGui.QLabel):
@@ -558,25 +553,25 @@ class MessageFromFriend(QtGui.QLabel):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
-        self.setMinimumSize(90, 40)
+        self.setMinimumSize(90, 20)
         self.setStyleSheet(' background: #FBFAF9; color: #555555;'
                            ' border-radius: 10px;'
                            ' border: none;border-bottom: 1.4px solid #E2E4E3')
+
 class MessageFromFriendWidget(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
-        #self.setContentsMargins(5, 5, 5, 5)
-        self.setMinimumSize(300, 40)
-        self.setMinimumSize(600, 100)
-        #self.setMaximumWidth(600)
-        #self.adjustSize()
+        # self.setContentsMargins(5, 5, 5, 5)
+        self.setMinimumSize(600, 40)
+        # self.setMaximumWidth(600)
+        # self.adjustSize()
         self.setStyleSheet('border: none; background: transparent; color: #555555;')
 
         self.containerLayout = HLayout()
         self.containerLayout.setAlignment(QtCore.Qt.AlignLeft)
-        self.containerLayout.setContentsMargins(10,0,10,0)
+        self.containerLayout.setContentsMargins(10, 0, 10, 0)
         self.setLayout(self.containerLayout)
-                    # /  left /   top  /   right /  bottom  /
+        # /  left /   top  /   right /  bottom  /
 
         self.FriendLogoLayoutbyMessage = VLayout()
         self.FriendLogoLayoutbyMessage.setAlignment(QtCore.Qt.AlignTop)
@@ -584,15 +579,15 @@ class MessageFromFriendWidget(QtGui.QLabel):
         self.containerLayout.addLayout(self.FriendLogoLayoutbyMessage)
 
         self.FriendLogoWidgetbyMessage = QtGui.QLabel()
-        self.FriendLogoWidgetbyMessage.setMinimumSize(36,36)
-        self.FriendLogoWidgetbyMessage.setMaximumSize(36,36)
+        self.FriendLogoWidgetbyMessage.setMinimumSize(36, 36)
+        self.FriendLogoWidgetbyMessage.setMaximumSize(36, 36)
         self.FriendLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/logoFriendaboutMessage.jpg);'
                                                      ' border-radius: 18px; border: 1px solid #FFFFFF;')
         self.FriendLogoLayoutbyMessage.addWidget(self.FriendLogoWidgetbyMessage)
 
-
         self.LabelMessageWidget = MessageFromFriend()
         self.containerLayout.addWidget(self.LabelMessageWidget)
+
 # ...............End  create Pattern Message.................
 
 
@@ -841,7 +836,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.rightArea = QtGui.QScrollArea()
         self.rightArea.setWidgetResizable(True)
-        self.rightArea.setMinimumSize(300, 400)
+        self.rightArea.setMinimumSize(100, 400)
         self.rightArea.setContentsMargins(0, 0, 0, 0)
         self.rightArea.adjustSize()
         self.rightArea.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
@@ -950,12 +945,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.rightWidgetForRightAreaAndInformationAboutUser.setLayout(self.layoutForRightAreaAndInformationAboutUser)
         self.rightWidgetForRightAreaAndInformationAboutUser.setStyleSheet('border: none;')
         self.rightWidgetForRightAreaAndInformationAboutUser.setMinimumSize(480,480)
-        #self.rightWidgetForRightAreaAndInformationAboutUser.adjustSize()
-
-
-
-
-
 
 
             #User information
@@ -963,31 +952,37 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.rightAreaForUserInformation = QtGui.QScrollArea()
         self.rightAreaForUserInformation.setWidgetResizable(True)
-        self.rightAreaForUserInformation.setMinimumSize(300, 400)
-        self.rightAreaForUserInformation.setMaximumWidth(300)
-        self.rightAreaForUserInformation.setContentsMargins(0, 0, 0, 0)
+        self.rightAreaForUserInformation.setMinimumSize(250, 700)
+        self.rightAreaForUserInformation.setMaximumWidth(250)
         self.rightAreaForUserInformation.adjustSize()
-        self.rightAreaForUserInformation.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
+        self.rightAreaForUserInformation.setContentsMargins(0, 0, 0, 0)
+        #self.rightAreaForUserInformation.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
 
 
-        self.rightAreaForUserInformation.setStyleSheet('border:none; background: transparent;')
+        self.rightAreaForUserInformation.setStyleSheet('border:none; background: #654789;')
 
         self.boxUserInformation = QtGui.QLabel()
-        self.boxUserInformation.setMinimumSize(300, 400)
+        self.boxUserInformation.setMinimumSize(250, 400)
+        self.rightAreaForUserInformation.setMaximumWidth(250)
+        self.boxUserInformation.adjustSize()
         self.rightAreaForUserInformation.setWidget(self.boxUserInformation)
         self.layoutForRightAreaUserInformation = VLayout()
         self.layoutForRightAreaUserInformation.setAlignment(QtCore.Qt.AlignTop)
+        self.layoutForRightAreaUserInformation.setContentsMargins(10,10,10,10)
         self.boxUserInformation.setLayout(self.layoutForRightAreaUserInformation)
 
         self.boxUserInformation.setContentsMargins(0, 0, 0, 0)
-        self.boxUserInformation.setStyleSheet(' background: #ffffff;')
+        self.boxUserInformation.setStyleSheet(' background: #ffffff; border: 1px solid #d6d6d6;')
 
-        self.logoInUserInformationWidget = QtGui.QLabel('lop')
-        self.logoInUserInformationWidget.setMaximumSize(30,30)
-        self.logoInUserInformationWidget.setStyleSheet('background: #fff4ff;')
-        self.layoutForRightAreaUserInformation.addWidget(self.logoInUserInformationWidget)
+        self.buttonBackInUserInfo = QtGui.QPushButton('<')
+        self.buttonBackInUserInfo.setMaximumWidth(32)
+        self.buttonBackInUserInfo.setMinimumHeight(32)
+        self.buttonBackInUserInfo.setStyleSheet('background: #ffffff; border: 1px solid #666666;'
+                                                ' border-radius: 16px; font-size: 26px; color:#666666;')
+        self.layoutForRightAreaUserInformation.addWidget(self.buttonBackInUserInfo)
         self.rightAreaForUserInformation.setVisible(False)
-            #enduser information
+
+        self.connect(self.buttonBackInUserInfo, QtCore.SIGNAL('clicked()'), self.peressB)
 
 
 
@@ -1012,140 +1007,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         leftLayoutMainuserWindow.addWidget(self.leftWidget)
         rightLayoutMainuserWindow.addWidget(self.rightWidget)
         #rightLayoutMainuserWindow.addWidget(self.rightWidgetUserInformation)
-
-    def ResizeScroll(self, min, maxi):
-        self.rightArea.verticalScrollBar().setValue(maxi)
-
-
-    def lisenS(self):
-        print '.........time'
-        # time.sleep(3)
-        self.rightWidget.setStyleSheet('border:3px solid;')
-        self.setMinimumSize(630, 460)
-        self.setMaximumSize(700, 800)
-        # stat = action.estabilishConnection()
-        print 'llll'
-        self.resize(600, 500)
-        print '.........time'
-
-    def showAttachDialog(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open file', '/home/art/Desktop/')
-        print fname
-        f = open(fname, 'r')
-        with f:
-            data = f.read()
-            self.prin = data
-            f.close()
-
-
-        di = open('/home/art/Documents/test.png', 'wb')
-        di.write(bytes(self.prin))
-        di.close()
-
-
-        self.testWidge = MessageFromFriendWidget()
-        self.testWidge.setStyleSheet('background: transparent; border: none;')
-        self.testWidge.setMaximumHeight(200)
-        self.testWidge.LabelMessageWidget.setStyleSheet(' background-image: url(/home/art/Documents/test.png); background-repeat: no-repeat;')
-        self.testWidge.LabelMessageWidget.setMaximumHeight(200)
-        self.layoutForRightArea.addWidget(self.testWidge)
-        self.buttonAttachFile.setFocus(False)
-        self.inputWidgetForSendMessage.setFocus(True)
-        #text, ok = QInputDialog.getText(self, 'Input Dialog',
-        #                                'Enter your name:')
-       # if ok:
-          #  print 'ok'
-
-
-
-
-
-    def closeEvent(self, event):
-        messbox =QtGui.QMessageBox()
-        messbox.setStyleSheet('background: #111111;border: none;')
-
-        reply = messbox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes,
-                                          QtGui.QMessageBox.No)
-
-        if reply == QtGui.QMessageBox.Yes:
-            main.setVisible(True)
-            main.close()
-        else:
-            event.ignore()
-
-    def pressRegistrationAction(self):
-        print 'press ...........start pressRegistrationAction........'
-        self.logoWidget.setVisible(False)
-        self.inputLineForLoginUser.setVisible(False)
-        self.inputLineForPasswordUser.setVisible(False)
-        self.emtyBlockAfterEdit.setVisible(False)
-        self.btnLogin.setVisible(False)
-        self.emptyBlock.setVisible(False)
-        self.btnRegistration.setVisible(False)
-
-        self.RegistrationHeader.setVisible(True)
-        self.emptyLabel0.setVisible(True)
-        newThread = ThreadDB()
-        newThread.start()
-        self.setMinimumSize(290, 460)
-        self.setMaximumSize(600, 460)
-        self.resize(290, 460)
-        print 'press ...........end pressRegistrationAction...........'
-
-    def pressBackAction(self):
-        print 'press ...........start pressBackAction........'
-        self.logoWidget.setVisible(True)
-        self.inputLineForLoginUser.setVisible(True)
-        self.inputLineForPasswordUser.setVisible(True)
-        self.emtyBlockAfterEdit.setVisible(True)
-        self.btnLogin.setVisible(True)
-        self.emptyBlock.setVisible(True)
-        self.btnRegistration.setVisible(True)
-
-        self.RegistrationHeader.setVisible(False)
-        self.emptyLabel0.setVisible(False)
-        newThread = ThreadDB()
-        newThread.start()
-
-        self.setMinimumSize(290, 460)
-        self.setMaximumSize(290, 460)
-        self.resize(290, 460)
-        # workPlace.show()
-        print 'press ...........end pressBackAction...........'
-
-    def pressLoginAction(self):
-        # r = MainAuthenticationWindow(self)
-        # t1 = threading.Thread(target= r.lisenS(), args=())
-        # t1.start()
-
-        self.btnLogin.setCursor(QCursor(QtCore.Qt.WaitCursor))
-        if (self.statusConnection == False):
-            self.statusConnection = self.act.estabilishConnection()
-            self.btnLogin.setCursor(QCursor(QtCore.Qt.ArrowCursor))
-
-        if (self.statusConnection == True and self.statusAuthorization == False):
-            self.statusAuthorization = self.act.loginAction(str(self.inputLineForLoginUser.text()),
-                                                            str(self.inputLineForPasswordUser.text()))
-
-        if (self.statusAuthorization == True):
-            self.start_main_user_form()
-            self.start()
-        else:
-            self.inputLineForPasswordUser.setText('incorrect Pasword')
-
-    def resizeEvent(self, event):
-        if(self.width() < 600):
-            self.leftWidget.setVisible(False)
-        if(self.width() > 600):
-            self.leftWidget.setVisible(True)
-        if (self.width() < 900 and self.statres == True):
-            self.rightArea.setVisible(False)
-            self.rightWidgetForSendMessage.setVisible(False)
-            print 'False..............'
-        if (self.width() > 900 and self.statres == True):
-            self.rightArea.setVisible(True)
-            self.rightWidgetForSendMessage.setVisible(True)
-            print 'True.............'
 
 
 
@@ -1193,7 +1054,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.statres = True
 
-
     def start(self):
         self.thread = QThread(self)
         self.worker = Worker()
@@ -1207,20 +1067,80 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.worker.message.connect(self.addMessageFromFriend)
         self.thread.start()
 
-    def addMessageFromFriend(self,i):
-        print  i
-        print type(i)
-        if(str(i)== "mess"):
-            print 'oppopopopopopooop'
-        self.testWidget = MessageFromFriendWidget()
 
-        self.testWidget.LabelMessageWidget.setText('Process_' + str(i)+ '__' +self.localTime)
-        self.layoutForRightArea.addWidget(self.testWidget)
 
-        self.emptF = QtGui.QWidget()
-        self.emptF.setMinimumSize(200, 14)
-        self.emptF.setStyleSheet('border: none')
-        self.layoutForRightArea.addWidget(self.emptF)
+
+
+    def peressB(self):
+        #self.rightAreaForUserInformation.setParent(None)
+        self.rightAreaForUserInformation.setVisible(False)
+        #self.layoutForInformationAboutUserWidgets.removeWidget(self.rightAreaForUserInformation)
+
+    def ResizeScroll(self, min, maxi):
+        self.rightArea.verticalScrollBar().setValue(maxi)
+
+    def pressRegistrationAction(self):
+        print 'press ...........start pressRegistrationAction........'
+        self.logoWidget.setVisible(False)
+        self.inputLineForLoginUser.setVisible(False)
+        self.inputLineForPasswordUser.setVisible(False)
+        self.emtyBlockAfterEdit.setVisible(False)
+        self.btnLogin.setVisible(False)
+        self.emptyBlock.setVisible(False)
+        self.btnRegistration.setVisible(False)
+
+        self.RegistrationHeader.setVisible(True)
+        self.emptyLabel0.setVisible(True)
+        newThread = ThreadDB()
+        newThread.start()
+        self.setMinimumSize(290, 460)
+        self.setMaximumSize(600, 460)
+        self.resize(290, 460)
+        print 'press ...........end pressRegistrationAction...........'
+
+    def pressBackAction(self):
+        print 'press ...........start pressBackAction........'
+        self.logoWidget.setVisible(True)
+        self.inputLineForLoginUser.setVisible(True)
+        self.inputLineForPasswordUser.setVisible(True)
+        self.emtyBlockAfterEdit.setVisible(True)
+        self.btnLogin.setVisible(True)
+        self.emptyBlock.setVisible(True)
+        self.btnRegistration.setVisible(True)
+
+        self.RegistrationHeader.setVisible(False)
+        self.emptyLabel0.setVisible(False)
+        newThread = ThreadDB()
+        newThread.start()
+
+        self.setMinimumSize(290, 460)
+        self.setMaximumSize(290, 460)
+        self.resize(290, 460)
+        # workPlace.show()
+        print 'press ...........end pressBackAction...........'
+
+    def pressLoginAction(self):
+        # r = MainAuthenticationWindow(self)
+        # t1 = threading.Thread(target= r.lisenS(), args=())
+        # t1.start()
+        self.btnLogin.setCursor(QCursor(QtCore.Qt.WaitCursor))
+        if (self.statusConnection == False):
+            self.statusConnection = self.act.estabilishConnection()
+            self.btnLogin.setCursor(QCursor(QtCore.Qt.ArrowCursor))
+
+        if (self.statusConnection == True and self.statusAuthorization == False):
+            self.statusAuthorization = self.act.loginAction(str(self.inputLineForLoginUser.text()),
+                                                            str(self.inputLineForPasswordUser.text()))
+
+        if (self.statusAuthorization == True):
+            self.start_main_user_form()
+            self.start()
+        else:
+            self.inputLineForPasswordUser.setText('incorrect Pasword')
+
+
+
+
 
 
     def send_message(self):
@@ -1245,10 +1165,72 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.buttonSendMessage.setFocus(False)
             self.inputWidgetForSendMessage.setFocus(True)
 
+            self.messageByMeWidget.meth = self.rightAreaForUserInformation
+    def showAttachDialog(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', '/home/art/Desktop/')
+        print fname
+        f = open(fname, 'r')
+        with f:
+            data = f.read()
+            self.prin = data
+            f.close()
+
+
+        di = open('/home/art/Documents/test.png', 'wb')
+        di.write(bytes(self.prin))
+        di.close()
+
+
+        self.testWidge = MessageFromFriendWidget()
+        self.testWidge.setStyleSheet('background: transparent; border: none;')
+        self.testWidge.setMaximumHeight(200)
+        self.testWidge.LabelMessageWidget.setStyleSheet(' background-image: url(/home/art/Documents/test.png); background-repeat: no-repeat;')
+        self.testWidge.LabelMessageWidget.setMaximumHeight(200)
+        self.layoutForRightArea.addWidget(self.testWidge)
+        self.buttonAttachFile.setFocus(False)
+        self.inputWidgetForSendMessage.setFocus(True)
+
+    def addMessageFromFriend(self,i):
+        print  i
+        print type(i)
+        if(str(i)== "mess"):
+            print 'oppopopopopopooop'
+        self.testWidget = MessageFromFriendWidget()
+
+        self.testWidget.LabelMessageWidget.setText('Process_' + str(i)+ '__' +self.localTime)
+        self.layoutForRightArea.addWidget(self.testWidget)
+
+        self.emptF = QtGui.QWidget()
+        self.emptF.setMinimumSize(200, 14)
+        self.emptF.setStyleSheet('border: none')
+        self.layoutForRightArea.addWidget(self.emptF)
 
 
 
 
+
+    def resizeEvent(self, event):
+        if(self.width() < 600):
+            self.leftWidget.setVisible(False)
+        if(self.width() > 600):
+            self.leftWidget.setVisible(True)
+        if (self.width() < 900 and self.statres == True):
+            print 'False..............'
+        if (self.width() > 900 and self.statres == True):
+            print 'True.............'
+
+    def closeEvent(self, event):
+        messbox =QtGui.QMessageBox()
+        messbox.setStyleSheet('background: #111111;border: none;')
+
+        reply = messbox.question(self, 'Message', "Are you sure to quit?", QtGui.QMessageBox.Yes,
+                                          QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            main.setVisible(True)
+            main.close()
+        else:
+            event.ignore()
 
 
 # if __name__ == '__gui2.py__':
