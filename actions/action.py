@@ -103,8 +103,7 @@ class A():
                 print 'server connection error'
         
         return sendMoreClientKeyExchangeMessage, statusConnection
-      
-    print 'conn' 
+
      
     
     
@@ -209,11 +208,7 @@ class A():
     conne = False
     def whileReceive(self):
         if(self.conne == False):
-            import socket
 
-            sock = socket.socket()
-
-            sock.connect(('localhost', 8000))
             self.conne = True
         else:
             data = self.sock.recv(2048)
@@ -221,22 +216,7 @@ class A():
             return str(data)
 
 
-
-    def lisen_and_print(self):
-        print 'jdy'
-        w = True
-        while(w):
-            data = self.sock.recv(2048)
-            if not data:
-                w = False
-            else:
-                print data
-                return  str(data)
-        print data
-
-    
     def sendMess(self, message):
-
         self.sock.send(str(message))
 
 # ..........Test Methods End...............................

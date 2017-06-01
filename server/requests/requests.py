@@ -107,7 +107,7 @@ def logOutRequestUpdateUserStatus(login):
 
 def searchUserByLoginAndCheckPassword(login, heshFromPassword):
     connDB = connect()
-    requestSearchByLogin = 'select login, passwd from users where login = \"' + str(login) + '\"'
+    requestSearchByLogin = 'select login, password from users where login = \"' + str(login) + '\"'
     print '\n' + requestSearchByLogin + '\n'
     a = connDB.cursor()
     a.execute(requestSearchByLogin)

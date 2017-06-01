@@ -20,28 +20,28 @@
       <Position>2</Position>
       <DataType>text|0</DataType>
     </column>
-    <column id="9" parent="6" name="passwd">
-      <Position>3</Position>
-      <DataType>text|0</DataType>
-    </column>
-    <column id="10" parent="6" name="firstname">
+    <column id="9" parent="6" name="firstname">
       <Position>4</Position>
       <DataType>text|0</DataType>
     </column>
-    <column id="11" parent="6" name="lastname">
+    <column id="10" parent="6" name="lastname">
       <Position>5</Position>
       <DataType>text|0</DataType>
     </column>
-    <column id="12" parent="6" name="age">
+    <column id="11" parent="6" name="age">
       <Position>6</Position>
       <DataType>int(11)|0</DataType>
     </column>
-    <column id="13" parent="6" name="conn">
+    <column id="12" parent="6" name="conn">
       <Position>7</Position>
       <DataType>text|0</DataType>
     </column>
-    <column id="14" parent="6" name="status_conn">
+    <column id="13" parent="6" name="status_conn">
       <Position>8</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="14" parent="6" name="password">
+      <Position>3</Position>
       <DataType>text|0</DataType>
     </column>
     <key id="15" parent="6" name="PRIMARY">

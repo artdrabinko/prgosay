@@ -158,15 +158,16 @@ class PubProtocol(basic.LineReceiver):
 
        
     def dataReceived(self, line):
+
         if (self.UserLoginStatus):
             print line
-            print '\nUser %s wants send message' % self.userLogin
+            print '\nUser %s wants send message' % self.factory.ListOfUsers
             try:
                 if(self.userLogin == 'admin'):
-                    self.factory.listUser['2'].sendLine(line)
+                    self.factory.ListOfUsers['2'].sendLine(line)
                     print 'User %s  send message\n' % self.userLogin
                 if (self.userLogin == '2'):
-                    self.factory.listUser['admin'].sendLine(line)
+                    self.factory.ListOfUsers['admin'].sendLine(line)
                     print 'User %s  send message\n' % self.userLogin
             except:
                 print 'error admin'
@@ -181,13 +182,15 @@ class PubProtocol(basic.LineReceiver):
                 ReceiveMessage = cipher.decrypt(line)
                 listMessage = pickle.loads(ReceiveMessage)
                 statusDecrypt = True
-                statusConnection = True
+                self.statusConnection = True
             except:
                 print 'except'
-                statusConnection = False 
-            print statusConnection
+                statusConnection = False
+                statusDecrypt = False
+
+            print self.statusConnection
             
-            if(statusDecrypt and statusConnection):
+            if(statusDecrypt and self.statusConnection):
                 
                 heshFromListMessage = getHashMD5(listMessage[0])
                 if(heshFromListMessage == listMessage[1][0]):
