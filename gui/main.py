@@ -631,8 +631,7 @@ class LeftFriendWidget(QtGui.QLabel):
         self.setMaximumSize(310, 70)
         self.setContentsMargins(10,0,5,0)
         # /  left /   top  /   right /  bottom  /
-        self.defoltStyle = '''background: #ffffff; border: none;
-                              border-bottom: 1px solid #cacfd2;'''
+        self.defoltStyle = '''background: #ffffff; border: none;'''
         self.setStyleSheet(self.defoltStyle)
         self.contentLaout = HLayout()
         self.contentLaout.setAlignment(QtCore.Qt.AlignLeft)
@@ -669,6 +668,7 @@ class LeftFriendWidget(QtGui.QLabel):
 
 
         self.messageCountWidget = QtGui.QLabel(str(self.messageCount))
+        self.messageCountWidget.setVisible(False)
         self.messageCountWidget.setMinimumSize(24,24)
         self.messageCountWidget.setMaximumHeight(24)
         self.messageCountWidget.setAlignment(QtCore.Qt.AlignCenter)
@@ -678,12 +678,13 @@ class LeftFriendWidget(QtGui.QLabel):
         self.contentLaout.addWidget(self.messageCountWidget)
 
     def enterEvent(self, event):
-        self.setStyleSheet('background: #EBEDED; border: none;'
-                           'border-bottom: 1px solid #cacfd2;')
+        self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.setStyleSheet('background: #EBEDED; border: none;')
     def mousePressEvent(self, event):
-        self.setStyleSheet('background: #DFE5E6; border: none;'
-                           'border-bottom: 1px solid #cacfd2;')
-        self.messageCountWidget.setText('0')
+        self.setStyleSheet('background: #DFE5E6; border: none;')
+        self.messageCountWidget.setVisible(False)
+        self.messageCount = 0
+
     def leaveEvent(self, event):
         self.setStyleSheet(self.defoltStyle)
 
@@ -730,12 +731,8 @@ class MainLeftWidget(QtGui.QLabel):
         self.leftArea = LeaftAreaWidget()
         self.layoutForMainLeftWidget.addWidget(self.leftArea)
 
-
-
-
-
-        self.leftFoooter = LeftFooterWidget()
-        self.layoutForMainLeftWidget.addWidget(self.leftFoooter)
+        self.leftFooter = LeftFooterWidget()
+        self.layoutForMainLeftWidget.addWidget(self.leftFooter)
 
 
     def buildLeftHeader(self):
@@ -791,8 +788,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         self.setContentsMargins(0, 0, 0, 0)
-        # first width second hight
-        # 290 460  #410 460
         self.setMinimumSize(300, 480)
         self.setMaximumSize(310, 480)
 
@@ -807,9 +802,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         class buttonSendMessage(ButtonSendMessage):
             def mousePressEvent(parent, event):
-                #print'\nWas be send buttonSendMessage:\n'
                 self.send_message()
-                self.friend.messageCountWidget.setText('0')
+                self.friend.messageCountWidget.setVisible(False)
+                self.friend.messageCount = 0
 
         class buttonAttachFile(ButtonAttachFile):
             def mousePressEvent(parent, event):
@@ -1371,6 +1366,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.inputWidgetForSendMessage.setFocus(True)
 
             self.messageByMeWidget.meth = self.rightAreaForUserInformation
+
+
     def showAttachDialog(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', '/home/art/Desktop/')
         print fname
@@ -1396,10 +1393,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.inputWidgetForSendMessage.setFocus(True)
 
     def addMessageFromFriend(self,i):
-        print  i
-        print type(i)
-        if(str(i)== "mess"):
-            print 'oppopopopopopooop'
+
         self.testWidget = MessageFromFriendWidget()
 
         self.testWidget.LabelMessageWidget.setText('Process_' + str(i)+ '__' +self.localTime)
@@ -1411,6 +1405,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.layoutForRightArea.addWidget(self.emptF)
 
         self.friend.setCountMessage(1)
+        self.friend.messageCountWidget.setVisible(True)
 
 
 
@@ -1441,7 +1436,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         #    event.ignore()
 
 
-# if __name__ == '__gui2.py__':
+#if __name__ == '__main.py__':
 
 app = QtGui.QApplication(sys.argv)
 
