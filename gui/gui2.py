@@ -464,6 +464,9 @@ class ButtonRegistrationWidget(QtGui.QPushButton):
 
 
 
+
+
+
 # .....................Build Application........................................
 
 
