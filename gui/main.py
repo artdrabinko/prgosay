@@ -168,6 +168,7 @@ class ButtonSendMessage(QtGui.QPushButton):
 class ButtonMenuWidget(QtGui.QPushButton):
     def __init__(self, parent=None):
         QtGui.QPushButton.__init__(self, parent)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
         self.setMaximumSize(52, 53)
         self.setMinimumSize(52, 53)
         icon = QtGui.QIcon('menu.png')
@@ -494,29 +495,32 @@ class Worker(QObject):
 
         self.finished.emit()
 
-        # ...............Create Pattern Message......................
+
+
+
+
+
+# ...............Create Pattern Message......................
 class MessageByMe(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
-        self.setMinimumSize(90, 40)
-        # self.setContentsMargins(5, 5, 5, 5)
-        self.setStyleSheet(' background: #EFFDDE; color: #555555;'
+
+        self.setMaximumWidth(370)
+        self.setContentsMargins(5, 5, 5, 5)
+        self.setStyleSheet(' background: #EFFDDE; color: #555555; padding: 5px;'
                            ' border-radius: 10px;'
                            ' border: none;border-bottom: 1.4px solid #C5E2AD;')
 
-class MessageSendByMeWidget(QtGui.QLabel):
-
+class MessageSendByMeWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        self.meth = QtGui.QScrollArea()
-        self.meth.setVisible(False)
-        QtGui.QLabel.__init__(self, parent)
-        # self.setContentsMargins(5, 5, 5, 5)
-        self.setMinimumSize(300, 40)
-        # self.setMaximumWidth(600)
-        self.setWordWrap(True)
-        self.adjustSize()
+        QtGui.QWidget.__init__(self, parent)
+        self.widget = QtGui.QScrollArea()
+        self.widget.setVisible(False)
+
+
+        self.setMaximumWidth(480)
         self.setStyleSheet('border: none; background: transparent; color: #555555;')
 
         self.containerLayout = HLayout()
@@ -529,12 +533,26 @@ class MessageSendByMeWidget(QtGui.QLabel):
         self.MyLogoLayoutbyMessage.setAlignment(QtCore.Qt.AlignTop)
         self.MyLogoLayoutbyMessage.setContentsMargins(5, 1, 0, 0)
 
-        MyLogoWidgetbyMessage = QtGui.QLabel()
-        MyLogoWidgetbyMessage.setMinimumSize(36, 36)
-        MyLogoWidgetbyMessage.setMaximumSize(36, 36)
-        MyLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/myLogoAboutMessage.png);'
-                                            ' border-radius: 18px; border: 1px solid #FFFFFF;')
-        self.MyLogoLayoutbyMessage.addWidget(MyLogoWidgetbyMessage)
+
+        class MyLogoInMessageWidget(QtGui.QLabel):
+            def __init__(self, widget, parent=None):
+                QtGui.QLabel.__init__(self, parent)
+                self.widget = widget
+                self.widget.setVisible(False)
+
+            def mousePressEvent(self, event):
+                if self.widget.isVisible():
+                    self.widget.setVisible(False)
+                else:
+                    self.widget.setVisible(True)
+
+        self.MyLogoWidgetbyMessage = MyLogoInMessageWidget(self.widget)
+        self.MyLogoWidgetbyMessage.setMinimumSize(36, 36)
+        self.MyLogoWidgetbyMessage.setMaximumSize(36, 36)
+        self.MyLogoWidgetbyMessage.setStyleSheet('background-image: url(./img/myLogoAboutMessage.png);'
+                                                ' border-radius: 18px; border: 1px solid #FFFFFF;')
+
+        self.MyLogoLayoutbyMessage.addWidget(self.MyLogoWidgetbyMessage)
 
         self.LabelMessageWidget = MessageByMe()
         self.containerLayout.addWidget(self.LabelMessageWidget)
@@ -545,10 +563,10 @@ class MessageSendByMeWidget(QtGui.QLabel):
 
     def mousePressEvent(self, event):
         print 'olopopopopopop'
-        if(self.meth.isVisible()):
-            self.meth.setVisible(False)
+        if(self.widget.isVisible()):
+            self.widget.setVisible(False)
         else:
-            self.meth.setVisible(True)
+            self.widget.setVisible(True)
 
 
 class MessageFromFriend(QtGui.QLabel):
@@ -556,18 +574,16 @@ class MessageFromFriend(QtGui.QLabel):
         QtGui.QLabel.__init__(self, parent)
         self.setAlignment(QtCore.Qt.AlignLeft)
         self.setWordWrap(True)
-        self.setMinimumSize(90, 20)
-        self.setStyleSheet(' background: #FBFAF9; color: #555555;'
+
+        self.setMaximumWidth(370)
+        self.setStyleSheet(' background: #FBFAF9; color: #555555; padding: 5px;'
                            ' border-radius: 10px;'
                            ' border: none;border-bottom: 1.4px solid #E2E4E3')
 
-class MessageFromFriendWidget(QtGui.QLabel):
+class MessageFromFriendWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        QtGui.QLabel.__init__(self, parent)
-        # self.setContentsMargins(5, 5, 5, 5)
-        self.setMinimumSize(600, 40)
-        # self.setMaximumWidth(600)
-        # self.adjustSize()
+        QtGui.QWidget.__init__(self, parent)
+        self.setMaximumWidth(480)
         self.setStyleSheet('border: none; background: transparent; color: #555555;')
 
         self.containerLayout = HLayout()
@@ -601,7 +617,7 @@ class MessageFromFriendWidget(QtGui.QLabel):
 
 
 
-class LeaftAreaWidget(QtGui.QScrollArea):
+class LeftAreaWidget(QtGui.QScrollArea):
     def __init__(self, parent=None):
         QtGui.QScrollArea.__init__(self, parent)
         self.setWidgetResizable(True)
@@ -622,14 +638,13 @@ class LeaftAreaWidget(QtGui.QScrollArea):
     def addNewFriend(self, newFriend):
         self.layoutForleftArea.addWidget(newFriend)
 
-
-
-class LeftFriendWidget(QtGui.QLabel):
+class LeftFriendWidget(QtGui.QPushButton):
     def __init__(self, friendLogin, friendName, messageCount, parent=None, ):
-        QtGui.QLabel.__init__(self, parent )
+        QtGui.QPushButton.__init__(self, parent )
         self.setMinimumSize(310, 70)
         self.setMaximumSize(310, 70)
         self.setContentsMargins(10,0,5,0)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
         # /  left /   top  /   right /  bottom  /
         self.defoltStyle = '''background: #ffffff; border: none;'''
         self.setStyleSheet(self.defoltStyle)
@@ -669,25 +684,26 @@ class LeftFriendWidget(QtGui.QLabel):
 
         self.messageCountWidget = QtGui.QLabel(str(self.messageCount))
         self.messageCountWidget.setVisible(False)
-        self.messageCountWidget.setMinimumSize(24,24)
-        self.messageCountWidget.setMaximumHeight(24)
+        self.messageCountWidget.setMinimumSize(22,22)
+        self.messageCountWidget.setMaximumHeight(22)
         self.messageCountWidget.setAlignment(QtCore.Qt.AlignCenter)
         self.messageCountWidget.setStyleSheet('background: #579E1C; font-size: 14px;'
-                                              'border-radius: 10px; color: #ffffff;')
+                                              'border-radius: 11px; color: #ffffff;')
 
         self.contentLaout.addWidget(self.messageCountWidget)
 
     def enterEvent(self, event):
         self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
         self.setStyleSheet('background: #EBEDED; border: none;')
-    def mousePressEvent(self, event):
-        self.setStyleSheet('background: #DFE5E6; border: none;')
-        self.messageCountWidget.setVisible(False)
-        self.messageCount = 0
+
 
     def leaveEvent(self, event):
         self.setStyleSheet(self.defoltStyle)
 
+    def mousePressEvent(self, event):
+        self.setStyleSheet('background: #DFE5E6; border: none;')
+        self.messageCountWidget.setVisible(False)
+        self.messageCount = 0
 
 
     def setCountMessage(self, count):
@@ -697,9 +713,6 @@ class LeftFriendWidget(QtGui.QLabel):
     def getCountMessage(self, count):
         return self.messageCountWidget.text()
 
-
-
-
 class LeftFooterWidget(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
@@ -708,13 +721,12 @@ class LeftFooterWidget(QtGui.QLabel):
         self.setStyleSheet('background: #EBEBEB;border: none; '
                            'border-top: 1px solid #cacfd2;')
 
-
-
 class MainLeftWidget(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
         self.setMinimumWidth(310)
         self.setMaximumWidth(310)
+
         self.setStyleSheet('border:none; background: #ffffff;')
         self.setContentsMargins(0, 0, 0, 0)
         self.setVisible(False)
@@ -728,7 +740,7 @@ class MainLeftWidget(QtGui.QLabel):
 
         self.buildLeftHeader()
 
-        self.leftArea = LeaftAreaWidget()
+        self.leftArea = LeftAreaWidget()
         self.layoutForMainLeftWidget.addWidget(self.leftArea)
 
         self.leftFooter = LeftFooterWidget()
@@ -781,6 +793,7 @@ class MainLeftWidget(QtGui.QLabel):
 class MainAuthenticationWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
+        self.friendList = {}
         self.setWindowTitle('Authentication Window')
         self.setWindowIcon(QtGui.QIcon('connect.png'))
         qr = self.frameGeometry()
@@ -803,8 +816,11 @@ class MainAuthenticationWindow(QtGui.QWidget):
         class buttonSendMessage(ButtonSendMessage):
             def mousePressEvent(parent, event):
                 self.send_message()
-                self.friend.messageCountWidget.setVisible(False)
-                self.friend.messageCount = 0
+
+
+        class LeftFriendInList(LeftFriendWidget):
+            def mousePressEvent(parent, event):
+                self.addFriendOnMainLeftWidget()
 
         class buttonAttachFile(ButtonAttachFile):
             def mousePressEvent(parent, event):
@@ -948,10 +964,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftHeader.setMaximumSize(300, 60)
         self.leftHeader.setStyleSheet('border: none; border-bottom: 1px solid #cacfd2;')
 
-        self.buttonMenu = ButtonMenuWidget()
-        self.inputSearch = inputSearchWidget()
-        layoutForWidgetsLeftHeader.addWidget(self.buttonMenu)
-        layoutForWidgetsLeftHeader.addWidget(self.inputSearch)
+        #self.buttonMenu = ButtonMenuWidget()
+        #self.inputSearch = inputSearchWidget()
+        #layoutForWidgetsLeftHeader.addWidget(self.buttonMenu)
+        #layoutForWidgetsLeftHeader.addWidget(self.inputSearch)
 
         self.leftArea = QtGui.QScrollArea()
         self.leftArea.setWidgetResizable(True)
@@ -1072,7 +1088,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
                                                                                
                                           """)
 
-        self.rightArea.setStyleSheet('border:none; background: transparent;')
+        #self.rightArea.setStyleSheet('border:none; background: transparent;')
 
 
         self.rightArea.setAlignment(QtCore.Qt.AlignCenter)
@@ -1099,7 +1115,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         layoutForRightWidgetSendMessage.addWidget(self.inputWidgetForSendMessage)
         layoutForRightWidgetSendMessage.addWidget(self.buttonSendMessage)
 #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-        self.boxwidr = QtGui.QLabel()
+        self.boxwidr = QtGui.QWidget()
         self.boxwidr.setMaximumWidth(480)
         #self.boxwidr.adjustSize()
         self.rightArea.setWidget(self.boxwidr)
@@ -1185,30 +1201,19 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
-        leftLayoutMainuserWindow.addWidget(self.leftWidget)
+        #leftLayoutMainuserWindow.addWidget(self.leftWidget)
+
+        self.countUser = 0
+
         self.mainLeftWidget = MainLeftWidget()
         self.mainLeftWidget.setVisible(False)
         leftLayoutMainuserWindow.addWidget(self.mainLeftWidget)
 
-        self.friend = LeftFriendWidget('admin', 'Artur Drabinko', 0)
-        self.mainLeftWidget.leftArea.addNewFriend(self.friend )
+        self.friend = LeftFriendInList('admin', 'Artur Drabinko', 0)
+        self.mainLeftWidget.leftArea.addNewFriend(self.friend)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self.friendList[self.countUser] = self.friend
+        self.countUser = self.countUser + 1
 
 
 
@@ -1219,10 +1224,20 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
+
+
+        #..........Start Button Action.........................
+        #2self.connect(self.friend, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
+
+
+        # ..........End Button Action.........................
+
+
+
+
+
+
     def start_main_user_form(self):
-
-
-        print 'True login'
         self.setWindowTitle('GoSay')
         self.setMinimumSize(380, 450)
         self.setMaximumSize(1500, 1000)
@@ -1234,16 +1249,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.btnLogin.setVisible(False)
         self.emptyBlock.setVisible(False)
         self.btnRegistration.setVisible(False)
-
-        self.Friend13 = QtGui.QLabel('   Nikolai Komar\n   You: Hi!')
-        self.Friend13.setMinimumSize(300, 62)
-        self.Friend13.setMaximumSize(320, 62)
-        self.Friend13.setStyleSheet('background: #f1f1f1; color: #171515;'
-                                    ' border: none; border-bottom: 1px solid #cacfd2')
-
-
-
-        self.layoutForleftArea.addWidget(self.Friend13)
 
 
         #self.leftWidget.setVisible(self.statusConnection)
@@ -1267,9 +1272,14 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.worker.message.connect(self.addMessageFromFriend)
         self.thread.start()
 
-
-
-
+    def addFriendOnMainLeftWidget(self):
+        print 'addFriendOnMainLeftWidget'
+        nweFriend = LeftFriendWidget('admin', 'Nikolai Komar', 0)
+        self.mainLeftWidget.leftArea.addNewFriend(nweFriend)
+        self.connect(nweFriend, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
+        self.friendList[self.countUser] = nweFriend
+        self.countUser  = self.countUser  + 1
+        print self.friendList
 
     def peressB(self):
         #self.rightAreaForUserInformation.setParent(None)
@@ -1320,9 +1330,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         print 'press ...........end pressBackAction...........'
 
     def pressLoginAction(self):
-        # r = MainAuthenticationWindow(self)
-        # t1 = threading.Thread(target= r.lisenS(), args=())
-        # t1.start()
         self.btnLogin.setCursor(QCursor(QtCore.Qt.WaitCursor))
         if (self.statusConnection == False):
             self.statusConnection = self.act.estabilishConnection()
@@ -1365,7 +1372,11 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.buttonSendMessage.setFocus(False)
             self.inputWidgetForSendMessage.setFocus(True)
 
-            self.messageByMeWidget.meth = self.rightAreaForUserInformation
+            self.messageByMeWidget.widget = self.rightAreaForUserInformation
+
+
+            self.friendList[self.countUser - 1].messageCountWidget.setVisible(False)
+            self.friendList[self.countUser - 1].messageCount = 0
 
 
     def showAttachDialog(self):
@@ -1404,8 +1415,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.emptF.setStyleSheet('border: none')
         self.layoutForRightArea.addWidget(self.emptF)
 
-        self.friend.setCountMessage(1)
-        self.friend.messageCountWidget.setVisible(True)
+        self.friendList[self.countUser-1].setCountMessage(1)
+
+        self.friendList[self.countUser - 1].messageCountWidget.setVisible(True)
 
 
 
