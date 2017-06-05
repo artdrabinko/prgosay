@@ -669,22 +669,45 @@ class LeftFriendWidget(QtGui.QPushButton):
 
         self.friendNameAndMessage = QtGui.QWidget()
         self.friendNameAndMessage.setMinimumSize(200, 65)
-        self.friendNameAndMessage.setContentsMargins(10, 8, 0, 0)
+        self.friendNameAndMessage.setContentsMargins(7, 8, 0, 0)
         self.friendNameAndMessageLayout = VLayout()
         self.friendNameAndMessageLayout.setAlignment(QtCore.Qt.AlignTop)
         self.friendNameAndMessage.setStyleSheet('border: none;')
         self.friendNameAndMessage.setLayout(self.friendNameAndMessageLayout)
 
 
+
+
+        self.friendNameAndStatus = QtGui.QWidget()
+        self.friendNameAndStatus.setContentsMargins(0, 0, 0, 0)
+        self.friendNameAndStatusLayout = HLayout()
+        self.friendNameAndStatus.setLayout(self.friendNameAndStatusLayout)
+
+
         self.friendNameWidget = QtGui.QLabel(self.friendName)
-        self.friendNameWidget.setStyleSheet('border: none; font-size: 22px; color: #282828;')
-        self.friendNameLastMessage = QtGui.QLabel('Hello howaresud iuf gsduigfiugsu?')
-        self.friendNameLastMessage.setMaximumWidth(180)
-        self.friendNameLastMessage.setWordWrap(True)
-        self.friendNameLastMessage.setVisible(False)
-        self.friendNameLastMessage.setStyleSheet('border: none; font-size: 12px; color: #696969;')
-        self.friendNameAndMessageLayout.addWidget(self.friendNameWidget)
-        self.friendNameAndMessageLayout.addWidget(self.friendNameLastMessage)
+        self.friendNameWidget.setContentsMargins(0, 0, 0, 0)
+        self.friendNameWidget.setStyleSheet('border: none; font-size: 20px;'
+                                            'color: #282828; padding-left: 1px;')
+
+        self.statusFriendWidget = QtGui.QWidget()
+        self.statusFriendWidget.setVisible(False)
+        self.statusFriendWidget.setMinimumSize(8, 8)
+        self.statusFriendWidget.setMaximumSize(8, 8)
+        self.statusFriendWidget.setStyleSheet('background: #579E1C;'
+                                              'border-radius: 4px;'
+                                              'border: none;')
+
+        self.friendNameAndStatusLayout.addWidget(self.statusFriendWidget)
+        self.friendNameAndStatusLayout.addWidget(self.friendNameWidget)
+
+
+        self.friendLastMessage = QtGui.QLabel()
+        self.friendLastMessage.setMaximumWidth(180)
+        self.friendLastMessage.setWordWrap(True)
+        self.friendLastMessage.setVisible(False)
+        self.friendLastMessage.setStyleSheet('border: none; font-size: 12px; color: #696969;')
+        self.friendNameAndMessageLayout.addWidget(self.friendNameAndStatus)
+        self.friendNameAndMessageLayout.addWidget(self.friendLastMessage)
 
         self.contentLaout.addWidget(self.friendNameAndMessage)
 
@@ -694,7 +717,7 @@ class LeftFriendWidget(QtGui.QPushButton):
         self.messageCountWidget.setMinimumSize(22,22)
         self.messageCountWidget.setMaximumHeight(22)
         self.messageCountWidget.setAlignment(QtCore.Qt.AlignCenter)
-        self.messageCountWidget.setStyleSheet('background: #579E1C; font-size: 14px;'
+        self.messageCountWidget.setStyleSheet('background: #579E1C; font-size: 13px;'
                                               'border-radius: 11px; color: #ffffff;')
 
         self.contentLaout.addWidget(self.messageCountWidget)
@@ -727,17 +750,28 @@ class FriendsWidget(QtGui.QPushButton):
         QtGui.QPushButton.__init__(self, parent )
         self.setMinimumSize(310, 50)
         self.setMaximumSize(310, 50)
-        self.setContentsMargins(10,0,5,0)
+        self.setContentsMargins(8,0,8,0)
         self.setFocusPolicy(QtCore.Qt.NoFocus)
         # /  left /   top  /   right /  bottom  /
         self.defoltStyle = '''background: #ffffff; border: none;'''
         self.setStyleSheet(self.defoltStyle)
-        self.contentLaout = HLayout()
-        self.contentLaout.setAlignment(QtCore.Qt.AlignLeft)
-        self.setLayout(self.contentLaout)
+        self.contentLayout = QtGui.QHBoxLayout()
+        self.contentLayout.setAlignment(QtCore.Qt.AlignVCenter)
+        self.contentLayout.setMargin(0)
+        self.contentLayout.setSpacing(0)
+        self.setLayout(self.contentLayout)
+        self.leftLayout = HLayout()
+        self.leftLayout.setAlignment(QtCore.Qt.AlignLeft)
+        self.rightLayout = HLayout()
+        self.rightLayout.setAlignment(QtCore.Qt.AlignRight)
+        self.contentLayout.addLayout(self.leftLayout)
+        self.contentLayout.addLayout(self.rightLayout)
+
 
         self.friendLogin = friendLogin
         self.friendName = friendName
+        self.friendID = '1'
+
 
         self.logo = QtGui.QLabel()
         self.logo.setMinimumSize(40,40)
@@ -745,41 +779,44 @@ class FriendsWidget(QtGui.QPushButton):
         self.logo.setStyleSheet('background: url(./img/logoFriendLeftArea/admin.png);'
                                 ' border: none;'
                                 'border-radius: 20px;')
-        self.contentLaout.addWidget(self.logo)
+        self.leftLayout.addWidget(self.logo)
 
 
         self.friendNameWidget = QtGui.QLabel(self.friendName)
-        self.friendNameWidget.setMinimumWidth(150)
+        self.friendNameWidget.setMinimumWidth(50)
         self.friendNameWidget.setStyleSheet('border: none; padding-left: 5px;'
-                                            'padding-bottom: 3px; '
+                                            'padding-bottom: 2px; '
                                             'font-size: 18px; color: #282828;')
-        self.contentLaout.addWidget(self.friendNameWidget)
+        self.leftLayout.addWidget(self.friendNameWidget)
+
 
 
         self.statusFriendWidget = QtGui.QWidget()
-        #self.settingsFriendWidget.setVisible(False)
+        self.statusFriendWidget.setVisible(False)
         self.statusFriendWidget.setMinimumSize(8, 8)
         self.statusFriendWidget.setMaximumSize(8, 8)
-        self.statusFriendWidget.setStyleSheet('background: #579E1C; font-size: 14px;'
+        self.statusFriendWidget.setStyleSheet('background: #579E1C;'
                                                 'border-radius: 4px; color: #ffffff;'
-                                                'border: none;'
-                                                )
-        self.contentLaout.addWidget(self.statusFriendWidget)
-
-        self.emptyWidget = QtGui.QLabel('')
-        self.emptyWidget.setMinimumWidth(1)
-        self.emptyWidget.setStyleSheet('padding: 0px')
-        self.contentLaout.addWidget(self.emptyWidget)
+                                                'border: none;')
+        self.leftLayout.addWidget(self.statusFriendWidget)
 
 
-        self.settingsFriendWidget = QtGui.QPushButton('..')
+        self.settingsFriendWidget = QtGui.QPushButton()
+        self.settingsFriendWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.settingsFriendWidget.setMinimumSize(30, 30)
         self.settingsFriendWidget.setMaximumSize(30, 30)
-        self.settingsFriendWidget.setStyleSheet('background: #579E1C; font-size: 14px;'
-                                                'border-radius: 15px; color: #ffffff;'
-                                                'border: none;'
-                                                )
-        self.contentLaout.addWidget(self.settingsFriendWidget)
+        self.settingsFriendWidget.setStyleSheet("""QPushButton:hover {
+                                                 background: url(./img/button_more_hover.png);
+                                                 padding: 0px;
+                                                }
+                                                
+                                                QPushButton {
+                                                background: url(./img/button_more.png);
+                                                color: #ffffff;
+                                                border: none;
+                                                }""")
+        self.rightLayout.addWidget(self.settingsFriendWidget)
+
 
 
     def enterEvent(self, event):
@@ -1320,7 +1357,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftTabWidget = LeftTabWidget()
 
         self.friendsListWidget = MainLeftWidget()
-        self.friend1 = FriendsWidget('2','Nikolai Komarcssfwe')
+        self.friend1 = FriendsWidget('2','Nikolai Komar')
         self.friendsListWidget.leftArea.addNewFriend(self.friend1)
 
 
@@ -1350,7 +1387,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
         #..........Start Button Action.........................
-        #self.connect(self.friend, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
+        self.connect(self.friend1.settingsFriendWidget, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
 
 
         # ..........End Button Action.........................
@@ -1406,7 +1443,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.friendList[self.countUser] = nweFriend
         self.countUser  = self.countUser  + 1
         self.mainLeftWidget.leftArea.addNewFriend(self.friend)
-        nweFriend.friendNameLastMessage.setVisible(True)
+        nweFriend.friendLastMessage.setVisible(True)
+
 
         print self.friendList
 
@@ -1547,7 +1585,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.friendList[self.countUser-1].setCountMessage(1)
 
         self.friendList[self.countUser - 1].messageCountWidget.setVisible(True)
-        self.friendList[self.countUser - 1].friendNameLastMessage.setText( str(i)[0:45]+'...')
+        self.friendList[self.countUser - 1].friendLastMessage.setText( str(i)[0:45]+'...')
+        self.friendList[self.countUser - 1].statusFriendWidget.setVisible(True)
 
 
 
