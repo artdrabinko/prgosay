@@ -62,8 +62,6 @@ class VLayout(QtGui.QVBoxLayout):
         QtGui.QVBoxLayout.__init__(self, parent)
         self.setMargin(0)
         self.setSpacing(0)
-
-
 class HLayout(QtGui.QHBoxLayout):
     def __init__(self, parent=None):
         QtGui.QHBoxLayout.__init__(self, parent)
@@ -266,7 +264,7 @@ class inputSendMessageWidget(QtGui.QLineEdit):
     def mousePressEvent(self, event):
         self.setStyleSheet('margin: 1px 10px 1px 10px;background-color: #ffffff;'
                            ' font-size: 16px; padding-left: 10px; color: #3A3131;'
-                           ' border: 1px solid #B3E08E;  border-radius: 4px;')
+                           ' border: 1px solid #468C0C;  border-radius: 4px;')
 
     def focusOutEvent(self, event):
         if (len(self.text()) == 0):
@@ -287,7 +285,7 @@ class inputSendMessageWidget(QtGui.QLineEdit):
             self.clear()
         self.setStyleSheet('margin: 1px 10px 1px 10px;background-color: #ffffff;'
                            ' font-size: 16px; padding-left: 10px; color: #3A3131;'
-                           ' border: 1px solid #B3E08E;  border-radius: 4px;')
+                           ' border: 1px solid #468C0C;  border-radius: 4px;')
 
 
 class HeaderRegistrationWidget(QtGui.QLabel):
@@ -626,9 +624,67 @@ class LeftAreaWidget(QtGui.QScrollArea):
         self.setWidgetResizable(True)
         self.setMinimumWidth(310)
         self.setMaximumWidth(310)
-        self.setStyleSheet('border: none; subcontrol-position: left;')
+        self.setStyleSheet("""QScrollArea{
+                                border-right:1px solid #111111;
+                                border: none;
+    
+                            }
+                            QStatusBar {
+                                border-left: 1px solid red;
+    
+                            }
+                            QScrollBar{
+                                 background: transparent;
+                                 border: none;
+    
+                             }
+                            QScrollBar:vertical {
+                                 background: #E5E5E2;
+                                 width: 8px;
+                                 margin: 0px 4px 0px 0px;
+                                 border: none;
+                             }
+                             QScrollBar:vertical:hover {
+                                 background: #E5E5E2;
+                                 width: 10px;
+                                 margin: 0px 0px 0px 0px;
+                                 border: none;
+                             }
+                             QScrollBar::handle:vertical {
+                                 border: none;
+                                 background: #A9A9A9;
+                                 min-height: 20px;
+                                 width: 5px;
+                             }QScrollBar::handle:vertical:hover {
+                                 border: none;
+                                 background:#787676;
+                                 min-height: 20px;
+                                 width: 5px;
+                             }
+                             QScrollBar::add-line:vertical {
+                                 border: none;
+                                 background: transparent;
+                                 height: 0px;
+                                 subcontrol-position: bottom;
+                                 subcontrol-origin: margin;
+                             }
+    
+                             QScrollBar::sub-line:vertical {
+                                 border: none;
+                                 background: transparent;
+                                 height: 0px;
+                                 subcontrol-position: top;
+                                 subcontrol-origin: margin;
+                             }
+    
+    
+                             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                                 background: transparent;
+                                 border: none;
+                             }
+    
+                              """)
         self.setContentsMargins(0, 0, 0, 0)
-
         self.container = QtGui.QWidget()
         self.container.setContentsMargins(0, 0, 0, 0)
         self.setWidget(self.container)
@@ -743,8 +799,6 @@ class LeftFriendWidget(QtGui.QPushButton):
     def getCountMessage(self, count):
         return self.messageCountWidget.text()
 
-
-
 class FriendsWidget(QtGui.QPushButton):
     def __init__(self, friendLogin, friendName, parent=None, ):
         QtGui.QPushButton.__init__(self, parent )
@@ -833,14 +887,147 @@ class FriendsWidget(QtGui.QPushButton):
 
 
 
+class AddFriendWidget(QtGui.QPushButton):
+    def __init__(self, parent=None, ):
+        QtGui.QPushButton.__init__(self, parent)
+        self.setMinimumSize(310, 45)
+        self.setMaximumSize(310, 45)
+        self.setContentsMargins(10, 0, 8, 0)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        # /  left /   top  /   right /  bottom  /
+        self.defoltStyle = '''background: #ffffff; border: none;'''
+        self.setStyleSheet(self.defoltStyle)
+        self.container = HLayout()
+        self.container.setAlignment(QtCore.Qt.AlignLeft)
+        self.setLayout(self.container)
 
 
+        self.icon = QtGui.QLabel('+')
+        self.icon.setAlignment(QtCore.Qt.AlignCenter)
+        self.icon.setMinimumSize(32, 32)
+        self.icon.setMaximumSize(32, 32)
+        self.icon.setStyleSheet(' font-size: 24px; color: #548B28;'
+                                'border: 1px solid #548B28;padding-bottom: 2px;padding-left: 1px;'
+                                'border-radius: 16px;')
+        self.container.addWidget(self.icon)
+
+        self.text = QtGui.QLabel('Add contact')
+        self.text.setMinimumWidth(50)
+        self.text.setStyleSheet('border: none; padding-left: 5px;'
+                                'padding-bottom: 2px;'
+                                'font-size: 17px; color: #509319;')
+        self.container.addWidget(self.text)
 
 
+    def enterEvent(self, event):
+        self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.setStyleSheet('background: #EBEDED; border: none;')
+
+    def leaveEvent(self, event):
+        self.setStyleSheet(self.defoltStyle)
+
+class AreaWidget(QtGui.QScrollArea):
+    def __init__(self, parent=None):
+        QtGui.QScrollArea.__init__(self, parent)
+        self.setWidgetResizable(True)
+        self.setAlignment(QtCore.Qt.AlignCenter)
+        self.setMinimumSize(100, 400)
+        self.setStyleSheet("""QScrollArea{
+                                border: none;
+                                border-left:1px solid #D6D6D6;
+                            }
+                            QScrollBar{
+                                 background: transparent;
+                                 border: none;
+                             }
+                            QScrollBar:vertical {
+                                 background: #E5E5E2;
+                                 width: 8px;
+                                 margin: 0px 4px 0px 0px;
+                                 border: none;
+                             }
+                             QScrollBar:vertical:hover {
+                                 background: #E5E5E2;
+                                 width: 10px;
+                                 margin: 0px 0px 0px 0px;
+                                 border: none;
+                             }
+                             QScrollBar::handle:vertical {
+                                 border: none;
+                                 background: #A9A9A9;
+                                 min-height: 20px;
+                                 width: 5px;
+                             }QScrollBar::handle:vertical:hover {
+                                 border: none;
+                                 background:#787676;
+                                 min-height: 20px;
+                                 width: 5px;
+                             }
+                             QScrollBar::add-line:vertical {
+                                 border: none;
+                                 background: transparent;
+                                 height: 0px;
+                                 subcontrol-position: bottom;
+                                 subcontrol-origin: margin;
+                             }
+                             QScrollBar::sub-line:vertical {
+                                 border: none;
+                                 background: transparent;
+                                 height: 0px;
+                                 subcontrol-position: top;
+                                 subcontrol-origin: margin;
+                             }
+                             QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                                 background: transparent;
+                                 border: none;
+                             }
+
+                            """)
+        self.setContentsMargins(0, 0, 0, 0)
+
+        self.mainContainer = QtGui.QWidget()
+        self.mainContainer.setContentsMargins(40, 15, 40, 0)
+        self.setWidget(self.mainContainer)
+        self.layoutForMainContainer= VLayout()
+        self.layoutForMainContainer.setAlignment(QtCore.Qt.AlignTop)
+        self.mainContainer.setLayout(self.layoutForMainContainer)
+        self.mainContainer.setStyleSheet('border:none; background: #ffffff;')
+
+        self.header = QtGui.QWidget()
+        self.header.setStyleSheet('border:none;')
+        self.header.setContentsMargins(0, 0, 0, 0)
+        self.headerContainer = VLayout()
+        self.header.setLayout(self.headerContainer)
+
+        self.label = QtGui.QLabel('Add contact')
+        self.label.setStyleSheet('font-size: 29px;')
+        self.label.setContentsMargins(0, 0, 0, 0)
+        self.headerContainer.addWidget(self.label)
 
 
+        self.searchWidget = QtGui.QWidget()
+        self.searchWidget.setContentsMargins(0, 26, 20, 0)
+        self.searchWidgetContainer = HLayout()
+        self.searchWidget.setLayout(self.searchWidgetContainer)
+        self.headerContainer.addWidget(self.searchWidget)
 
 
+        self.searchLine = QtGui.QLineEdit()
+        self.searchLine.setMinimumSize(120,42)
+        self.searchLine.setStyleSheet('background: #ffffff; border:none; font-size: 17px; color: #222222;'
+                                      'margin-right: 12px; border-bottom: 1px solid #cacfd2;')
+        self.searchWidgetContainer.addWidget(self.searchLine)
+
+        self.searchButton = QtGui.QPushButton('Search')
+        self.searchButton.setMinimumSize(130, 33)
+        self.searchButton.setMaximumSize(130, 33)
+        self.searchButton.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.searchButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.searchButton.setStyleSheet('background: #579E1C; border:none;'
+                                        'font-size: 16px; color: #ffffff;')
+        self.searchWidgetContainer.addWidget(self.searchButton )
+
+        self.layoutForMainContainer.addWidget(self.header)
 
 
 
@@ -916,7 +1103,8 @@ class LeftTabWidget(QtGui.QTabWidget):
         self.setMaximumWidth(310)
         self.setTabPosition(1)
 
-        self.style = """QTabWidget::pane{
+        self.style = """
+                        QTabWidget::pane{
                         border: none;
                         padding: 0px;
                         width: 310px;
@@ -1029,7 +1217,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
                     parent.setStyleSheet('margin: 1px 10px 1px 10px;'
                                        ' background-color: #ffffff; '
                                        'font-size: 16px; padding-left: 10px;'
-                                       ' color: #3A3131; border: 1px solid #B3E08E;'
+                                       ' color: #3A3131; border: 1px solid #468C0C;'
                                        '  border-radius: 4px;')
 
         class HeaderRegistration(HeaderRegistrationWidget):
@@ -1138,12 +1326,12 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         # ...................Start content self.rightWidget.............................
         self.rightWidget = QtGui.QWidget()
-        self.rightWidget.setMinimumSize(300, 470)
+        self.rightWidget.setMinimumSize(100, 470)
 
 
-        self.rightWidget.setContentsMargins(0, 0, 0, 0)
+        self.rightWidget.setContentsMargins(1, 0, 0, 0)
         self.rightWidget.setStyleSheet(' border: none; background-image: url(./img/fon3.png);'
-                                       'border-left: 1px solid #cacfd2;')
+                                       'border-left: 4px solid #cacfd2;')
         rightWidgetlayout = VLayout()
         rightWidgetlayout.setAlignment(QtCore.Qt.AlignTop)
         self.rightWidget.setLayout(rightWidgetlayout)
@@ -1175,6 +1363,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.rightArea = QtGui.QScrollArea()
         self.rightArea.setWidgetResizable(True)
+        self.rightArea.setAlignment(QtCore.Qt.AlignCenter)
         self.rightArea.setMinimumSize(100, 400)
         self.rightArea.setContentsMargins(0, 0, 0, 0)
         self.rightArea.verticalScrollBar().rangeChanged.connect(self.ResizeScroll)
@@ -1232,12 +1421,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
         #self.rightArea.setStyleSheet('border:none; background: transparent;')
 
 
-        self.rightArea.setAlignment(QtCore.Qt.AlignCenter)
         self.rightWidgetForSendMessage = EmptyBoxWidget()
         self.rightWidgetForSendMessage.setMinimumSize(300, 60)
         self.rightWidgetForSendMessage.setMaximumSize(1000, 60)
         self.rightWidgetForSendMessage.setStyleSheet('background: #EBEBEB; border: none;'
-                                                     ' border-left: 1px solid #D6D6D6;'
                                                      ' border-top: 1px solid #D6D6D6;'
                                                      'border-bottom: 1px solid #D6D6D6;')
 
@@ -1357,6 +1544,11 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftTabWidget = LeftTabWidget()
 
         self.friendsListWidget = MainLeftWidget()
+
+
+        self.buttonAdd = AddFriendWidget()
+        self.friendsListWidget.leftArea.addNewFriend(self.buttonAdd)
+
         self.friend1 = FriendsWidget('2','Nikolai Komar')
         self.friendsListWidget.leftArea.addNewFriend(self.friend1)
 
@@ -1378,6 +1570,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftTabWidget.setIconSize(QSize(150,90))
 
         leftLayoutMainuserWindow.addWidget(self.leftTabWidget)
+
+        self.searchFriendArea = AreaWidget()
+        self.searchFriendArea.setVisible(False)
+        rightLayoutMainuserWindow.addWidget(self.searchFriendArea)
         rightLayoutMainuserWindow.addWidget(self.rightWidget)
         #rightLayoutMainuserWindow.addWidget(self.rightWidgetUserInformation)
 
@@ -1387,7 +1583,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
         #..........Start Button Action.........................
-        self.connect(self.friend1.settingsFriendWidget, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
+        self.connect(self.buttonAdd, QtCore.SIGNAL('clicked()'), self.addFriendOnListWidget)
+        self.connect(self.searchFriendArea.searchButton, QtCore.SIGNAL('clicked()'), self.searchFriends)
 
 
         # ..........End Button Action.........................
@@ -1432,6 +1629,21 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.thread.finished.connect(self.thread.deleteLater)
         self.worker.message.connect(self.addMessageFromFriend)
         self.thread.start()
+
+
+    def searchFriends(self):
+        self.act.sendSearchFriendsMessage(str(self.searchFriendArea.searchLine.text()))
+
+
+
+
+
+
+    def addFriendOnListWidget(self):
+        friend = FriendsWidget('2', 'Nikolai Komar')
+        self.friendsListWidget.leftArea.addNewFriend(friend)
+        self.rightWidget.setVisible(False)
+        self.searchFriendArea.setVisible(True)
 
     def addFriendOnMainLeftWidget(self):
         print 'addFriendOnMainLeftWidget'
@@ -1520,10 +1732,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def send_message(self):
         if self.inputWidgetForSendMessage.text() == 'Write a message...' or self.inputWidgetForSendMessage.text() == '':
             self.inputWidgetForSendMessage.clear()
-            self.buttonSendMessage.setFocus(False)
             self.inputWidgetForSendMessage.setFocus(True)
         else:
-            self.act.send_message_action(str(self.inputWidgetForSendMessage.text()))
+            self.act.send_message_action(self.inputWidgetForSendMessage.text())
 
             self.messageByMeWidget = MessageSendByMeWidget()
             self.messageByMeWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text())+ '___' +self.localTime)
@@ -1563,9 +1774,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.testWidge = MessageFromFriendWidget()
         self.testWidge.setStyleSheet('background: transparent; border: none;')
-        self.testWidge.setMaximumHeight(200)
+        self.testWidge.setMinimumSize(100,100)
+        self.testWidge.setMinimumWidth(100)
         self.testWidge.LabelMessageWidget.setStyleSheet(' background-image: url(/home/art/Documents/test.png); background-repeat: no-repeat;')
-        self.testWidge.LabelMessageWidget.setMaximumHeight(200)
+        #self.testWidge.LabelMessageWidget.setMaximumHeight(200)
         self.layoutForRightArea.addWidget(self.testWidge)
         self.buttonAttachFile.setFocus(False)
         self.inputWidgetForSendMessage.setFocus(True)
@@ -1593,10 +1805,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def resizeEvent(self, event):
         if(self.width() < 600):
             #self.leftWidget.setVisible(False)
-            self.mainLeftWidget.setVisible(False)
+            self.leftTabWidget.setVisible(False)
         if(self.width() > 600):
             #self.leftWidget.setVisible(True)
-            self.mainLeftWidget.setVisible(True)
+            self.leftTabWidget.setVisible(True)
         if (self.width() < 900 and self.statres == True):
             print 'False..............'
         if (self.width() > 900 and self.statres == True):

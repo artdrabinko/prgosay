@@ -167,19 +167,16 @@ class A():
     def loginAction(self, login, password):
         print '.....loginAction.......'
         obj2 = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
-        ExchangeMessage = []    
-        
+        ExchangeMessage = []
         Message = []
+
         listMess = []
-        
         listHesh = []
         
         listMess.append('4')
         listMess.append(login)
         listMess.append(password)
-        
-        print listMess
-        
+
         Message.append(obj2.encrypt(pickle.dumps(listMess,2)))
         listHesh.append(self.getHashMD5(Message))
         
@@ -206,14 +203,46 @@ class A():
 #..........Test Methods...............................
 
     conne = False
+    count = 0
     def whileReceive(self):
+        l = []
+        l.append(self.sessionkey)
+        l.append(self.vector)
+        print l
         if(self.conne == False):
-
+            l1 = []
+            l1.append(self.sessionkey)
+            l1.append(self.vector)
+            print l
             self.conne = True
         else:
+            print 'else'
+            l3 = []
+            l3.append(self.sessionkey)
+            l3.append(self.vector)
+            print l3
+            print 'end else'
             data = self.sock.recv(2048)
-            print  data
-            return str(data)
+            self.count = self.count + 1
+            if self.count > 1:
+                print  data
+                serverMessage = pickle.loads(str(data))
+                print 'else'
+                l4 = []
+                l4.append(self.sessionkey)
+                l4.append(self.vector)
+                print l3
+                print 'end else.........'
+                print serverMessage
+                print serverMessage[0]
+                objdec = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
+
+                statusLoginMessage = pickle.loads(objdec.decrypt(str(serverMessage[0][0])))
+                print statusLoginMessage
+                statusLogin = statusLoginMessage[1]
+
+                return str(statusLogin)
+            return 'lop'
 
 
     def sendMess(self, message):
@@ -248,9 +277,40 @@ class A():
     def send_message_action(self, message):
         print message
         self.sock.send(str(message))
-    
-    
-    
+
+
+    def encriptMessage(self, message):
+        obj = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
+        ExchangeMessage = []
+        encriptMessage = []
+
+        listMess = message
+        listHesh = []
+
+        encriptMessage.append(obj.encrypt(pickle.dumps(listMess, 2)))
+        listHesh.append(self.getHashMD5(encriptMessage))
+
+        ExchangeMessage.append(encriptMessage)
+        ExchangeMessage.append(listHesh)
+        print ExchangeMessage
+        encriptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
+        return encriptedAndDumpMessage
+
+
+
+    def sendSearchFriendsMessage(self, friendName):
+        listMess = []
+        listMess.append('8')
+        listMess.append(friendName)
+
+        print listMess
+
+        SearchFriendsMessage = self.encriptMessage(listMess)
+        self.sock.send(SearchFriendsMessage)
+
+
+
+
     
     
     

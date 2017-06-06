@@ -159,21 +159,22 @@ class PubProtocol(basic.LineReceiver):
        
     def dataReceived(self, line):
 
-        if (self.UserLoginStatus):
+        if self.UserLoginStatus :
             print line
             print '\nUser %s wants send message' % self.factory.ListOfUsers
             try:
-                if(self.userLogin == 'admin'):
+                if self.userLogin == 'admin':
                     self.factory.ListOfUsers['2'].sendLine(line)
                     print 'User %s  send message\n' % self.userLogin
-                if (self.userLogin == '2'):
+
+                if self.userLogin == '2':
                     self.factory.ListOfUsers['admin'].sendLine(line)
                     print 'User %s  send message\n' % self.userLogin
             except:
                 print 'error admin'
 
 
-        if(self.statusConnection != True):
+        if self.statusConnection != True :
             #statusConnection = self.statusConnection
             privatkey = RSA.importKey(open('/home/art/Documents/alisaprivatekey.txt').read())
             cipher = PKCS1_OAEP.new(privatkey)
@@ -190,10 +191,10 @@ class PubProtocol(basic.LineReceiver):
 
             print self.statusConnection
             
-            if(statusDecrypt and self.statusConnection):
+            if statusDecrypt and self.statusConnection :
                 
                 heshFromListMessage = getHashMD5(listMessage[0])
-                if(heshFromListMessage == listMessage[1][0]):
+                if heshFromListMessage == listMessage[1][0] :
                     self.seansKey = listMessage[0][1]
                     clientKeyExchangeMessage = True
                     statusConnection = True
@@ -204,7 +205,7 @@ class PubProtocol(basic.LineReceiver):
                 clientKeyExchangeMessage = False
                 self.factory.statusConnection  = False
 
-            if(clientKeyExchangeMessage and statusConnection):
+            if clientKeyExchangeMessage and statusConnection :
                 self.sendServerKeyExchangeMessage(statusConnection)
 
             self.statusConnection = statusConnection
@@ -212,15 +213,16 @@ class PubProtocol(basic.LineReceiver):
         else:
             self.encripdetConnection = True
         
-        if(self.encripdetConnection == True and self.statusAuthorithation == False):
+        if self.encripdetConnection == True and self.statusAuthorithation == False:
+
             print '\ nelse status True:\n'
             message= pickle.loads(line)
             obj = AES.new(self.seansKey, AES.MODE_CFB, self.iv)
             clientMessage = pickle.loads(obj.decrypt(message[0][0]))
-
             self.statusAuthorithation = loginActionFromUser(clientMessage[1], getHashMD5(clientMessage[2]))
 
-            if(self.statusAuthorithation):
+
+            if self.statusAuthorithation:
                 self.userLogin = clientMessage[1]
 
                 self.factory.ListOfUsers[self.userLogin] = self
