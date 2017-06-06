@@ -22,6 +22,44 @@ def connect():
     return conn
 
 
+
+def searchAllUsersWithName(Name):
+    connDB = connect()
+    print  Name
+    requestSearchByName = 'select uid, login, firstname, lastname, age, status_conn from users where firstname = \"' + Name + '\"'
+    a = connDB.cursor()
+    a.execute(requestSearchByName)
+
+    responseSearchByName = a.fetchall()
+
+    if responseSearchByName != []:
+        print responseSearchByName
+        responseSearchByName = responseSearchByName[0]
+        connDB.close()
+
+        return responseSearchByName, True
+    else:
+        #print 'There is no such user'
+        connDB.close()
+
+        return 'There is no such user with Name', False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def searchByName(name):
     connDB = connect()
     

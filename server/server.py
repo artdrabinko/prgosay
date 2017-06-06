@@ -11,17 +11,16 @@ from Crypto.Cipher import PKCS1_OAEP
 from Crypto.Cipher import AES
 from Crypto import Random
 
-
+import base64
+import os
 import time
 import hashlib
 
 from twisted.internet import reactor, protocol, endpoints
 from twisted.protocols import basic
 
-import sys
-sys.path.insert(0,"/home/art/PycharmProjects/prgosay/server/requests")
-import requests
 
+import requests
 
 
 
@@ -73,6 +72,90 @@ def createServerCerificateMessage():
     return ServerCerificateMessage
 
 
+
+
+
+class Worker:
+    def __init__(self,seanceKey, IV):
+        self.key = seanceKey
+        self.iv = IV
+        self.cipher = AES.new(self.key, AES.MODE_CFB, self.iv)
+
+    def getHashMD5(self, text):
+        hash_md5 = hashlib.md5()
+        hash_md5.update(str(text))
+        return hash_md5.hexdigest()
+
+    def decryptMessage(self, data):
+        # символ, использующийся для дополнения шифруемых данных
+        # до размера, кратного 32 байтам
+        print 'decrypt......................'
+        PADDING = '{'
+        # функция дополнения
+        DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+        clientMessage = pickle.loads(data)
+
+        decoded = DecodeAES(self.cipher, clientMessage[0][0])
+        decryptedMessage = pickle.loads(decoded)
+        print str(decryptedMessage) + '.......decr message........'
+        return decryptedMessage
+
+    def encryptMessage(self, message):
+        # размер блока шифрования
+        BLOCK_SIZE = 32
+
+        # символ, использующийся для дополнения шифруемых данных
+        # до размера, кратного 32 байтам
+        PADDING = '{'
+        # функция дополнения
+        pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+        EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+
+
+        ExchangeMessage = []
+        encryptMessage = []
+
+        listMess = message[:]
+        listHesh = []
+
+        LO = []
+        LO.append(pickle.dumps(listMess, 2))
+
+        #cipher = AES.new(self.key)
+        encoded = EncodeAES(self.cipher, LO[0])
+
+        encryptMessage.append(encoded)
+        listHesh.append(self.getHashMD5(encryptMessage[0]))
+
+        ExchangeMessage.append(encryptMessage)
+        ExchangeMessage.append(listHesh)
+
+        print ExchangeMessage, 'exchange.........'
+        encryptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
+        return encryptedAndDumpMessage
+
+    def process_message(self, argument):
+        method_name = 'number_' + str(argument[0])
+        method = getattr(self, method_name, lambda: "nothing")
+        return method(argument)
+
+    def number_8(self, argument):
+        respond, status  = requests.searchAllUsersWithName(argument[1])
+        print str(respond[2]) + ' ' + str(respond[3])
+        print status
+        answer = {}
+        answer[respond[0]] = respond
+        listMess = []
+
+        listMess.append('9')
+        listMess.append(answer)
+        print listMess
+        messageForSend = self.encryptMessage(listMess)
+
+        return messageForSend
+
+
+
 class PubProtocol(basic.LineReceiver):
 
     def __init__(self, factory):
@@ -81,13 +164,10 @@ class PubProtocol(basic.LineReceiver):
         self.seansKey = ''
         self.iv = Random.new().read(16)  # 128 bit
 
-
         self.statusConnection = False
         self.encripdetConnection = False
         self.statusAuthorithation = False
         self.UserLoginStatus = False
-
-
 
     def connectionMade(self):
         newUser = self.transport.getPeer()
@@ -136,11 +216,6 @@ class PubProtocol(basic.LineReceiver):
         serverExchangeMessage = pickle.dumps(ExchangeMessage, 2)
         self.sendLine(serverExchangeMessage)
 
-
-
-
-
-
     def connectionLost(self, reason):
         print 'connectionLost'
         print self.factory.ListOfUsers
@@ -156,19 +231,24 @@ class PubProtocol(basic.LineReceiver):
             print '\n.........self.factory.clients.remove(self)  error........'
         print self.factory.ListOfUsers
 
-       
+
+
     def dataReceived(self, line):
 
         if self.UserLoginStatus :
-            print line
+            clientMessage = self.worker.decryptMessage(line)
+
+            messageForSend =  self.worker.process_message(clientMessage)
+            print messageForSend
+
             print '\nUser %s wants send message' % self.factory.ListOfUsers
             try:
                 if self.userLogin == 'admin':
-                    self.factory.ListOfUsers['2'].sendLine(line)
+                    self.factory.ListOfUsers['admin'].sendLine(str(messageForSend))
                     print 'User %s  send message\n' % self.userLogin
 
                 if self.userLogin == '2':
-                    self.factory.ListOfUsers['admin'].sendLine(line)
+                    self.factory.ListOfUsers['2'].sendLine(str(messageForSend))
                     print 'User %s  send message\n' % self.userLogin
             except:
                 print 'error admin'
@@ -223,6 +303,7 @@ class PubProtocol(basic.LineReceiver):
 
 
             if self.statusAuthorithation:
+                self.worker = Worker(self.seansKey, self.iv)
                 self.userLogin = clientMessage[1]
 
                 self.factory.ListOfUsers[self.userLogin] = self
@@ -238,12 +319,6 @@ class PubProtocol(basic.LineReceiver):
 
             self.sendServerExchangeMessage()
             self.UserLoginStatus = True
-
-
-
-
-
-
 
 
 

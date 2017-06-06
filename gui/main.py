@@ -1147,14 +1147,6 @@ class LeftTabWidget(QtGui.QTabWidget):
 
 
 
-
-
-
-
-
-
-
-
 class MainAuthenticationWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -1592,8 +1584,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
-
-
     def start_main_user_form(self):
         self.setWindowTitle('GoSay')
         self.setStyleSheet('background: #EBEBEB;')
@@ -1633,7 +1623,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
     def searchFriends(self):
         self.act.sendSearchFriendsMessage(str(self.searchFriendArea.searchLine.text()))
-
+        print 'search ction.....................'
 
 
 
@@ -1656,6 +1646,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.countUser  = self.countUser  + 1
         self.mainLeftWidget.leftArea.addNewFriend(self.friend)
         nweFriend.friendLastMessage.setVisible(True)
+
+        self.rightWidget.setVisible(True)
+        self.searchFriendArea.setVisible(False)
 
 
         print self.friendList

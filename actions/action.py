@@ -8,28 +8,34 @@ import requests
 import time
 import socket
 import hashlib
-
+import base64
+import os
 
 from Crypto.Cipher import AES
 from Crypto import Random
 
-import cPickle as pickle
+
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 #import math
 #import threading
 
 
+import cPickle as pickle
 
-class A():
-    
-    HOST = 'localhost'
-    PORT = 8000
-    BUFSIZE = 2048
-    ADDR = (HOST,PORT)
-    
+class A:
+    def __init__(self):
+        self.sessionKey = ''
+        self.vector = ''
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conne = False
+        self.HOST = 'localhost'
+        self.PORT = 8000
+        self.BUFSIZE = 2048
+        self.ADDR = (self.HOST,self.PORT)
+
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     serverCertificateMessage = '1'
 
@@ -38,9 +44,6 @@ class A():
     ACCEPTEDTMESSAGE = []
     PUBLICKEYFROMSERVER = []
     clientKeyExchangeMessage = []
-
-    sessionkey = ''
-    vector = ''
 
 
     def getHashMD5(self, text):
@@ -129,9 +132,9 @@ class A():
             if(Data[0][1] == publicKeyfromServer):
                 print 'pubkey True\n'
                 
-                self.sessionkey = Random.new().read(32)
+                self.sessionKey = Random.new().read(32)
 
-                self.sock.send(self.createClientKeyExchangeMessage(publicKeyfromServer,self.sessionkey))
+                self.sock.send(self.createClientKeyExchangeMessage(publicKeyfromServer,self.sessionKey))
                 serverKeyExchangeMessage = self.sock.recv(2048)
                 p = []
                 p.append(serverKeyExchangeMessage)
@@ -142,7 +145,7 @@ class A():
                 self.vector = (ExchangeMessage[0][0])
                 
 
-                obj = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
+                obj = AES.new(self.sessionKey, AES.MODE_CFB, self.vector)
                 serverMessage = pickle.loads(obj.decrypt(ExchangeMessage[1][0]))
 
                 
@@ -166,7 +169,7 @@ class A():
 
     def loginAction(self, login, password):
         print '.....loginAction.......'
-        obj2 = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
+        obj2 = AES.new(self.sessionKey, AES.MODE_CFB, self.vector)
         ExchangeMessage = []
         Message = []
 
@@ -189,8 +192,8 @@ class A():
         
         serverMessage = pickle.loads(str(data))
         
-        obj = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
-        statusLoginMessage = pickle.loads(obj.decrypt(serverMessage[0][0]))
+        self.mainObj = AES.new(self.sessionKey, AES.MODE_CFB, self.vector)
+        statusLoginMessage = pickle.loads(self.mainObj.decrypt(serverMessage[0][0]))
         print statusLoginMessage
         statusLogin = statusLoginMessage[1]
         return statusLogin
@@ -200,55 +203,6 @@ class A():
 
 
 
-#..........Test Methods...............................
-
-    conne = False
-    count = 0
-    def whileReceive(self):
-        l = []
-        l.append(self.sessionkey)
-        l.append(self.vector)
-        print l
-        if(self.conne == False):
-            l1 = []
-            l1.append(self.sessionkey)
-            l1.append(self.vector)
-            print l
-            self.conne = True
-        else:
-            print 'else'
-            l3 = []
-            l3.append(self.sessionkey)
-            l3.append(self.vector)
-            print l3
-            print 'end else'
-            data = self.sock.recv(2048)
-            self.count = self.count + 1
-            if self.count > 1:
-                print  data
-                serverMessage = pickle.loads(str(data))
-                print 'else'
-                l4 = []
-                l4.append(self.sessionkey)
-                l4.append(self.vector)
-                print l3
-                print 'end else.........'
-                print serverMessage
-                print serverMessage[0]
-                objdec = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
-
-                statusLoginMessage = pickle.loads(objdec.decrypt(str(serverMessage[0][0])))
-                print statusLoginMessage
-                statusLogin = statusLoginMessage[1]
-
-                return str(statusLogin)
-            return 'lop'
-
-
-    def sendMess(self, message):
-        self.sock.send(str(message))
-
-# ..........Test Methods End...............................
 
 
 
@@ -280,21 +234,35 @@ class A():
 
 
     def encriptMessage(self, message):
-        obj = AES.new(self.sessionkey, AES.MODE_CFB, self.vector)
+        # размер блока шифрования
+        BLOCK_SIZE = 32
+        # символ, использующийся для дополнения шифруемых данных
+        # до размера, кратного 32 байтам
+        PADDING = '{'
+        # функция дополнения
+        pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+        EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
+
+
         ExchangeMessage = []
-        encriptMessage = []
+        encryptMessage = []
 
-        listMess = message
-        listHesh = []
+        listMessage = message[:]
+        diagest = []
 
-        encriptMessage.append(obj.encrypt(pickle.dumps(listMess, 2)))
-        listHesh.append(self.getHashMD5(encriptMessage))
+        LO = []
+        LO.append(pickle.dumps(listMessage, 2))
+        encoded = EncodeAES(self.mainObj, LO[0])
 
-        ExchangeMessage.append(encriptMessage)
-        ExchangeMessage.append(listHesh)
-        print ExchangeMessage
-        encriptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
-        return encriptedAndDumpMessage
+
+        encryptMessage.append(encoded)
+        diagest.append(self.getHashMD5(encryptMessage[0]))
+
+        ExchangeMessage.append(encryptMessage)
+        ExchangeMessage.append(diagest)
+
+        encryptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
+        return encryptedAndDumpMessage
 
 
 
@@ -306,10 +274,56 @@ class A():
         print listMess
 
         SearchFriendsMessage = self.encriptMessage(listMess)
-        self.sock.send(SearchFriendsMessage)
+        self.sock.send(str(SearchFriendsMessage))
+        #self.send_message_action(SearchFriendsMessage)
+        #return SearchFriendsMessage
+
+
+#..........Test Methods...............................
+
+
+    def process_message(self, argument):
+        method_name = 'number_' + str(argument[0])
+        method = getattr(self, method_name, lambda: "nothing")
+        return method(argument)
+
+    def number_9(self, argument):
+        respond, status  = requests.searchAllUsersWithName(argument[1])
+        return status
 
 
 
+    def whileReceive(self):
+        if self.conne == False:
+            self.conne = True
+        else:
+            print '............start rec...........'
+            # размер блока шифрования
+            BLOCK_SIZE = 32
+            # символ, использующийся для дополнения шифруемых данных
+            # до размера, кратного 32 байтам
+            PADDING = '{'
+            # функция дополнения
+            DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
+
+            data = self.sock.recv(2048)
+            serverMessage = pickle.loads(data)
+            print serverMessage
+
+            #cipher = AES.new(self.sessionKey)
+            decoded = DecodeAES(self.mainObj, serverMessage[0][0])
+            print decoded
+            encryptMessage = pickle.loads(decoded)
+
+            print encryptMessage
+
+            return str(encryptMessage)
+
+
+    def sendMess(self, message):
+        self.sock.send(str(message))
+
+# ..........Test Methods End...............................
 
     
     
