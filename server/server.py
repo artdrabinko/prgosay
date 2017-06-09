@@ -72,14 +72,39 @@ def createServerCerificateMessage():
     return ServerCerificateMessage
 
 
+class AESCipher(object):
+
+    def __init__(self, key , iv):
+        self.bs = 32
+        self.key = key
+        self.iv = iv
+
+    def encrypt(self, raw):
+        raw = self._pad(raw)
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw))
+
+    def decrypt(self, enc):
+        enc = base64.b64decode(enc)
+        iv = enc[:AES.block_size]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return self._unpad(cipher.decrypt(enc[AES.block_size:]))
+
+    def _pad(self, s):
+        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
+
+    @staticmethod
+    def _unpad(s):
+        return s[:-ord(s[len(s)-1:])]
 
 
 
 class Worker:
-    def __init__(self,seanceKey, IV):
-        self.key = seanceKey
-        self.iv = IV
-        self.cipher = AES.new(self.key, AES.MODE_CFB, self.iv)
+    def __init__(self, key, iv):
+        self.key = key
+        self.iv = iv
+        self.chiper = AESCipher(self.key, self.iv)
 
     def getHashMD5(self, text):
         hash_md5 = hashlib.md5()
@@ -87,50 +112,25 @@ class Worker:
         return hash_md5.hexdigest()
 
     def decryptMessage(self, data):
-        # символ, использующийся для дополнения шифруемых данных
-        # до размера, кратного 32 байтам
-        print 'decrypt......................'
-        PADDING = '{'
-        # функция дополнения
-        DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
         clientMessage = pickle.loads(data)
-
-        decoded = DecodeAES(self.cipher, clientMessage[0][0])
+        decoded = self.chiper.decrypt(clientMessage[0][0])
         decryptedMessage = pickle.loads(decoded)
         print str(decryptedMessage) + '.......decr message........'
         return decryptedMessage
 
     def encryptMessage(self, message):
-        # размер блока шифрования
-        BLOCK_SIZE = 32
-
-        # символ, использующийся для дополнения шифруемых данных
-        # до размера, кратного 32 байтам
-        PADDING = '{'
-        # функция дополнения
-        pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
-        EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-
-
         ExchangeMessage = []
         encryptMessage = []
-
         listMess = message[:]
-        listHesh = []
-
-        LO = []
-        LO.append(pickle.dumps(listMess, 2))
-
-        #cipher = AES.new(self.key)
-        encoded = EncodeAES(self.cipher, LO[0])
+        listHash = []
+        encoded = self.chiper.encrypt(pickle.dumps(listMess, 2))
 
         encryptMessage.append(encoded)
-        listHesh.append(self.getHashMD5(encryptMessage[0]))
+        listHash.append(self.getHashMD5(encryptMessage[0]))
 
         ExchangeMessage.append(encryptMessage)
-        ExchangeMessage.append(listHesh)
+        ExchangeMessage.append(listHash)
 
-        print ExchangeMessage, 'exchange.........'
         encryptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
         return encryptedAndDumpMessage
 
@@ -143,15 +143,16 @@ class Worker:
         respond, status  = requests.searchAllUsersWithName(argument[1])
         print str(respond[2]) + ' ' + str(respond[3])
         print status
-        answer = {}
-        answer[respond[0]] = respond
+        if(status):
+            answer = {}
+            answer[respond[0]] = respond
+        else:
+            answer = False
         listMess = []
-
         listMess.append('9')
         listMess.append(answer)
         print listMess
         messageForSend = self.encryptMessage(listMess)
-
         return messageForSend
 
 

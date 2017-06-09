@@ -23,6 +23,35 @@ from Crypto.Cipher import PKCS1_OAEP
 
 import cPickle as pickle
 
+
+class AESCipher(object):
+
+    def __init__(self, key , iv):
+        self.bs = 32
+        self.key = key
+        self.iv = iv
+
+    def encrypt(self, raw):
+        raw = self._pad(raw)
+        iv = Random.new().read(AES.block_size)
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return base64.b64encode(iv + cipher.encrypt(raw))
+
+    def decrypt(self, enc):
+        enc = base64.b64decode(enc)
+        iv = enc[:AES.block_size]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return self._unpad(cipher.decrypt(enc[AES.block_size:]))
+
+    def _pad(self, s):
+        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
+
+    @staticmethod
+    def _unpad(s):
+        return s[:-ord(s[len(s)-1:])]
+
+
+
 class A:
     def __init__(self):
         self.sessionKey = ''
@@ -118,41 +147,31 @@ class A:
         statusConnection = False
     
         data = self.sock.recv(2048)
-    
-        Data = self.messageProcessing(data)    
-        print 'bery hesh'
-        hesh = self.getHashMD5(Data[0])
-        if(Data[1][0] == hesh):
+
+        Data = self.messageProcessing(data)
+        hash = self.getHashMD5(Data[0])
+        if Data[1][0] == hash :
             print 'ok!\n'
             
             f = open('/home/art/Documents/alisapublickey.txt','rb')
-            publicKeyfromServer = f.read(); f.close()
-            print publicKeyfromServer
+            publicKeyFromServer = f.read(); f.close()
+            print publicKeyFromServer
             
-            if(Data[0][1] == publicKeyfromServer):
+            if Data[0][1] == publicKeyFromServer:
                 print 'pubkey True\n'
                 
                 self.sessionKey = Random.new().read(32)
-
-                self.sock.send(self.createClientKeyExchangeMessage(publicKeyfromServer,self.sessionKey))
+                self.sock.send(self.createClientKeyExchangeMessage(publicKeyFromServer,self.sessionKey))
                 serverKeyExchangeMessage = self.sock.recv(2048)
-                p = []
-                p.append(serverKeyExchangeMessage)
-                print p
+
                 ExchangeMessage = self.messageProcessing(serverKeyExchangeMessage)
                 print ExchangeMessage[0]
 
                 self.vector = (ExchangeMessage[0][0])
-                
 
-                obj = AES.new(self.sessionKey, AES.MODE_CFB, self.vector)
-                serverMessage = pickle.loads(obj.decrypt(ExchangeMessage[1][0]))
+                self.aesCFB = AES.new(self.sessionKey, AES.MODE_CFB, self.vector)
+                serverMessage = pickle.loads(self.aesCFB.decrypt(ExchangeMessage[1][0]))
 
-                
-                print ExchangeMessage[0]
-                print str(ExchangeMessage[1]) + str(serverMessage)
-                print ExchangeMessage[2]
-                       
                 statusConnection = serverMessage[1]
                 
                 print '....status conn....' + str(statusConnection)            
@@ -191,22 +210,15 @@ class A:
         data = self.sock.recv(2048)
         
         serverMessage = pickle.loads(str(data))
-        
+
         self.mainObj = AES.new(self.sessionKey, AES.MODE_CFB, self.vector)
+
         statusLoginMessage = pickle.loads(self.mainObj.decrypt(serverMessage[0][0]))
         print statusLoginMessage
         statusLogin = statusLoginMessage[1]
+        if statusLogin:
+            self.chiper = AESCipher(self.sessionKey, self.vector)
         return statusLogin
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -228,38 +240,24 @@ class A:
             print 'user yge exist'
         print ''
 
-    def send_message_action(self, message):
-        print message
+    def send_message(self, message):
         self.sock.send(str(message))
 
 
     def encriptMessage(self, message):
-        # размер блока шифрования
-        BLOCK_SIZE = 32
-        # символ, использующийся для дополнения шифруемых данных
-        # до размера, кратного 32 байтам
-        PADDING = '{'
-        # функция дополнения
-        pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
-        EncodeAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
-
-
         ExchangeMessage = []
         encryptMessage = []
 
         listMessage = message[:]
-        diagest = []
+        hash = []
 
-        LO = []
-        LO.append(pickle.dumps(listMessage, 2))
-        encoded = EncodeAES(self.mainObj, LO[0])
-
+        encoded = self.chiper.encrypt(pickle.dumps(listMessage, 2))
 
         encryptMessage.append(encoded)
-        diagest.append(self.getHashMD5(encryptMessage[0]))
+        hash.append(self.getHashMD5(encryptMessage[0]))
 
         ExchangeMessage.append(encryptMessage)
-        ExchangeMessage.append(diagest)
+        ExchangeMessage.append(hash)
 
         encryptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
         return encryptedAndDumpMessage
@@ -270,12 +268,8 @@ class A:
         listMess = []
         listMess.append('8')
         listMess.append(friendName)
-
-        print listMess
-
-        SearchFriendsMessage = self.encriptMessage(listMess)
-        self.sock.send(str(SearchFriendsMessage))
-        #self.send_message_action(SearchFriendsMessage)
+        searchFriendsMessage = self.encriptMessage(listMess)
+        self.send_message(searchFriendsMessage)
         #return SearchFriendsMessage
 
 
@@ -297,22 +291,10 @@ class A:
         if self.conne == False:
             self.conne = True
         else:
-            print '............start rec...........'
-            # размер блока шифрования
-            BLOCK_SIZE = 32
-            # символ, использующийся для дополнения шифруемых данных
-            # до размера, кратного 32 байтам
-            PADDING = '{'
-            # функция дополнения
-            DecodeAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
-
             data = self.sock.recv(2048)
             serverMessage = pickle.loads(data)
             print serverMessage
-
-            #cipher = AES.new(self.sessionKey)
-            decoded = DecodeAES(self.mainObj, serverMessage[0][0])
-            print decoded
+            decoded  = self.chiper.decrypt(str(serverMessage[0][0]).decode('utf-8'))
             encryptMessage = pickle.loads(decoded)
 
             print encryptMessage
