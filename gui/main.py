@@ -10,7 +10,7 @@ from PyQt4.QtGui import QCursor
 sys.path.insert(0, "/home/art/PycharmProjects/prgosay/actions/")
 import action
 
-
+import cPickle as pickle
 
 import datetime
 #from simple_thread import SimpleThread
@@ -481,6 +481,7 @@ from PyQt4.QtGui import *
 class Worker(QObject):
     finished = pyqtSignal()
     message = pyqtSignal(str)
+    messageCortage = pyqtSignal(list)
     obj = ''
 
     @pyqtSlot()
@@ -491,6 +492,8 @@ class Worker(QObject):
             print 'dannie from sock ',mess
             if mess == None:
                 print 'none'
+            elif type(mess) == list:
+                self.messageCortage.emit(mess)
             else:
                 self.message.emit(str(mess))
 
@@ -1028,6 +1031,13 @@ class AreaWidget(QtGui.QScrollArea):
         self.searchWidgetContainer.addWidget(self.searchButton )
 
         self.layoutForMainContainer.addWidget(self.header)
+
+        self.widgetForSearchedFriends = QtGui.QWidget()
+        self.layoutForSearchedFriends = QtGui.QGridLayout()
+        self.layoutForSearchedFriends.setSpacing(10)
+
+        self.widgetForSearchedFriends.setLayout(self.layoutForSearchedFriends)
+        self.layoutForMainContainer.addWidget(self.widgetForSearchedFriends)
 
 
 
@@ -1619,7 +1629,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.message.connect(self.addMessageFromFriend)
+        #self.worker.message.connect(self.addMessageFromFriend)
+        self.worker.message.connect(self.processingMessage)
+        self.worker.messageCortage.connect(self.processingMessage)
         self.thread.start()
 
 
@@ -1795,6 +1807,26 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.friendList[self.countUser - 1].friendLastMessage.setText( str(i)[0:45]+'...')
         self.friendList[self.countUser - 1].statusFriendWidget.setVisible(True)
 
+    def displayFoundFriends(self, mess):
+        k = 0
+        j = 0
+        for i in mess:
+            print mess[i]
+            friend = mess[i]
+            searchedFriend = QLabel(str(friend[2]) + ' ' +str(friend[3]))
+            if j != 3:
+                self.searchFriendArea.layoutForSearchedFriends.addWidget(searchedFriend, k, j)
+                j = j + 1
+            else:
+                k = k + 1
+                j = 0
+                self.searchFriendArea.layoutForSearchedFriends.addWidget(searchedFriend, k, j)
+
+    def processingMessage(self, mess):
+        print 'from proc mess', mess
+        if mess[0] == '9' :
+            print 'processingMessage if == 9', mess
+            self.displayFoundFriends(mess[1])
 
 
     def resizeEvent(self, event):

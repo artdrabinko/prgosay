@@ -296,10 +296,12 @@ class A:
             print serverMessage
             decoded  = self.chiper.decrypt(str(serverMessage[0][0]).decode('utf-8'))
             encryptMessage = pickle.loads(decoded)
-
             print encryptMessage
 
-            return str(encryptMessage)
+            if encryptMessage[0] == '9':
+                return encryptMessage
+            else:
+                return str(encryptMessage)
 
 
     def sendMess(self, message):
