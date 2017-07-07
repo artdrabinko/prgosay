@@ -1727,7 +1727,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.inputWidgetForSendMessage.clear()
             self.inputWidgetForSendMessage.setFocus(True)
         else:
-            self.act.send_message_action(self.inputWidgetForSendMessage.text())
+            self.act.send_message(self.inputWidgetForSendMessage.text())
 
             self.messageByMeWidget = MessageSendByMeWidget()
             self.messageByMeWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text())+ '___' +self.localTime)

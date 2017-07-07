@@ -141,11 +141,13 @@ class Worker:
 
     def number_8(self, argument):
         respond, status  = requests.searchAllUsersWithName(argument[1])
-        print str(respond[2]) + ' ' + str(respond[3])
+
         print status
-        if(status):
-            answer = {}
-            answer[respond[0]] = respond
+        answer = {}
+
+        if status:
+            for res in respond:
+                answer[res[0]] = res
         else:
             answer = False
         listMess = []

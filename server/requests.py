@@ -34,7 +34,7 @@ def searchAllUsersWithName(Name):
 
     if responseSearchByName != []:
         print responseSearchByName
-        responseSearchByName = responseSearchByName[0]
+        #responseSearchByName = responseSearchByName[0]
         connDB.close()
 
         return responseSearchByName, True
