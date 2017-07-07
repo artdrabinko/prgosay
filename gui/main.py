@@ -1151,6 +1151,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.friendList = {}
+        self.searchFriendList = {}
+
         self.setWindowTitle('Authentication Window')
         self.setWindowIcon(QtGui.QIcon('connect.png'))
         qr = self.frameGeometry()
@@ -1638,14 +1640,14 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def addFriendOnMainLeftWidget(self):
         print 'addFriendOnMainLeftWidget'
         self.friend.setParent(None)
-        nweFriend = LeftFriendWidget('admin', 'Nikolai Komar', 0)
-        self.mainLeftWidget.leftArea.addNewFriend(nweFriend)
-        self.connect(nweFriend, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
+        newFriend = LeftFriendWidget('admin', 'Nikolai Komar', 0)
+        self.mainLeftWidget.leftArea.addNewFriend(newFriend)
+        self.connect(newFriend, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
 
-        self.friendList[self.countUser] = nweFriend
+        self.friendList[self.countUser] = newFriend
         self.countUser  = self.countUser  + 1
         self.mainLeftWidget.leftArea.addNewFriend(self.friend)
-        nweFriend.friendLastMessage.setVisible(True)
+        newFriend.friendLastMessage.setVisible(True)
 
         self.rightWidget.setVisible(True)
         self.searchFriendArea.setVisible(False)
