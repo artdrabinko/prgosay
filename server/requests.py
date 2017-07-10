@@ -26,7 +26,7 @@ def connect():
 def searchAllUsersWithName(Name):
     connDB = connect()
     print  Name
-    requestSearchByName = 'select uid, login, firstname, lastname, age, status_conn from users where firstname = \"' + Name + '\"'
+    requestSearchByName = 'select uid, login, firstname, lastname, age, status_conn, city from users where firstname = \"' + Name + '\"'
     a = connDB.cursor()
     a.execute(requestSearchByName)
 

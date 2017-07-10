@@ -44,7 +44,11 @@
       <Position>8</Position>
       <DataType>text|0</DataType>
     </column>
-    <key id="15" parent="6" name="PRIMARY">
+    <column id="15" parent="6" name="city">
+      <Position>9</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <key id="16" parent="6" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>uid</ColNames>
       <Primary>1</Primary>
