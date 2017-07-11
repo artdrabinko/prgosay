@@ -791,6 +791,7 @@ class FriendsWidget(QtGui.QPushButton):
         self.setFocusPolicy(QtCore.Qt.NoFocus)
         # /  left /   top  /   right /  bottom  /
         self.defoltStyle = '''background: #ffffff; border: none;'''
+        self.hoverStyle = '''background: #F3F5F5; border: none;'''
         self.setStyleSheet(self.defoltStyle)
         self.contentLayout = QtGui.QHBoxLayout()
         self.contentLayout.setAlignment(QtCore.Qt.AlignVCenter)
@@ -850,13 +851,11 @@ class FriendsWidget(QtGui.QPushButton):
 
     def enterEvent(self, event):
         self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
-        self.setStyleSheet('background: #EBEDED; border: none;')
+        self.setStyleSheet(self.hoverStyle)
 
     def leaveEvent(self, event):
         self.setStyleSheet(self.defoltStyle)
 
-    def mousePressEvent(self, event):
-        self.setStyleSheet('background: #DFE5E6; border: none;')
 
 
 class AddFriendWidget(QtGui.QPushButton):
@@ -891,7 +890,7 @@ class AddFriendWidget(QtGui.QPushButton):
 
     def enterEvent(self, event):
         self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
-        self.setStyleSheet('background: #EBEDED; border: none;')
+        self.setStyleSheet('background: #F3F5F5; border: none;')
 
     def leaveEvent(self, event):
         self.setStyleSheet(self.defoltStyle)
@@ -978,11 +977,13 @@ class AreaWidget(QtGui.QScrollArea):
         self.searchWidget = QtGui.QWidget()
         self.searchWidget.setContentsMargins(0, 26, 20, 0)
         self.searchWidgetContainer = HLayout()
+        self.searchWidgetContainer.setAlignment(QtCore.Qt.AlignLeft)
         self.searchWidget.setLayout(self.searchWidgetContainer)
         self.headerContainer.addWidget(self.searchWidget)
 
         self.searchLine = QtGui.QLineEdit()
         self.searchLine.setMinimumSize(120, 42)
+        self.searchLine.setMaximumSize(380, 42)
         self.searchLine.setStyleSheet('background: #ffffff; border:none; font-size: 17px; color: #222222;'
                                       'margin-right: 12px; border-bottom: 1px solid #cacfd2;')
         self.searchWidgetContainer.addWidget(self.searchLine)
@@ -1198,6 +1199,14 @@ class SearchedFriendWidget(QtGui.QWidget):
         self.subContainerForInfAboutUserAndButtonAdd.addWidget(self.statusUser)
         self.subContainerForInfAboutUserAndButtonAdd.addWidget(self.userCity)
         self.subContainerForInfAboutUserAndButtonAdd.addWidget(self.addFriendButton)
+
+class NoSuchUserWidget(QtGui.QLabel):
+    def __init__(self, parent = None):
+        QtGui.QLabel.__init__(self, parent)
+        self.setVisible(False)
+        self.setMinimumHeight(120)
+        self.setStyleSheet('font-size: 18px; color: #282828;'
+                           'padding: 0px;')
 
 
 

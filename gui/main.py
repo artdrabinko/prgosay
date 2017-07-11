@@ -50,7 +50,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.myFriendsList = {}
         self.friendList = {}
-        self.searchedFriendList = {}
+        self.searchedFriendListInformation = {}
+        self.searchedFriendListObjects = {}
 
         self.bGroupMyFriends = QtGui.QButtonGroup()
 
@@ -482,9 +483,17 @@ class MainAuthenticationWindow(QtGui.QWidget):
         #self.connect(self.buttonAdd, QtCore.SIGNAL('clicked()'), self.addNewFriendOnListWidget)
         self.connect(self.searchFriendArea.searchButton, QtCore.SIGNAL('clicked()'), self.searchFriends)
 
+        self.labelNoSuchUser = NoSuchUserWidget('Sorry, no such user.')
+        self.searchFriendArea.layoutForSearchedFriends.addWidget(self.labelNoSuchUser, 0, 0)
+        self.btnGroupMyFriendsList = QtGui.QButtonGroup()
+        self.connect(self.btnGroupMyFriendsList, QtCore.SIGNAL('buttonClicked(int)'),self.mousePressOnFriendFromFriendsList)
 
+        self.btnGroupMyFriendsSettings = QtGui.QButtonGroup()
+        self.connect(self.btnGroupMyFriendsSettings, QtCore.SIGNAL('buttonClicked(int)'),self.selectSettingForFriend)
+        self.uidDeletingOrClearDialogFriend = 1
         # ..........End Button Action.........................
-
+        self.selectedFriendForChatWidget = QtGui.QPushButton()
+        self.selectedFriendForChatWidgetInformation = []
 
 
 
@@ -699,15 +708,17 @@ class MainAuthenticationWindow(QtGui.QWidget):
         print '..........search action.....................'
 
     def clearSearchArea(self):
-        print 'clearSearchArea'
-        print self.searchedFriendList
-
-
+        for uid in self.searchedFriendListObjects:
+            searchedFriend = self.searchedFriendListObjects[uid]
+            searchedFriend.setVisible(False)
+            self.labelNoSuchUser.setVisible(False)
+            del searchedFriend
 
     def displayFoundFriends(self, mess):
         k = 0
         j = 0
         self.bGroupSearchedFriends = QtGui.QButtonGroup()
+        self.clearSearchArea()
         def checkFriend(widget, btnVisible):
             if btnVisible == True:
                 widget.setVisible(False)
@@ -717,7 +728,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
             friend = mess[i]
             uid = int(friend[0])
             searchedFriend = SearchedFriendWidget(str(friend[2]), str(friend[3]),str(friend[5]),str(friend[6]))
-            self.searchedFriendList[int(friend[0])] = friend
+            self.searchedFriendListInformation[int(friend[0])] = friend
+            self.searchedFriendListObjects[uid] = searchedFriend
             if j != 2:
                 self.searchFriendArea.layoutForSearchedFriends.addWidget(searchedFriend, k, j)
                 self.bGroupSearchedFriends.addButton(searchedFriend.addFriendButton, uid)
@@ -736,14 +748,16 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
     def processingMessage(self, mess):
-        print 'from proc mess', mess
-        if mess[0] == '9' :
-            print 'processingMessage if == 9', mess
-            print type(mess)
+        if mess[0] == '9' and mess[1] != False:
             self.displayFoundFriends(mess[1])
+        else:
+            print 'no such user'
+            self.clearSearchArea()
+            self.labelNoSuchUser.setVisible(True)
+
 
     def addNewFriendInFriendsList(self, uid):
-        infromationAboutFriend = self.searchedFriendList[uid]
+        infromationAboutFriend = self.searchedFriendListInformation[uid]
         uid = int(infromationAboutFriend[0])
 
         key_exists = uid in self.myFriendsList
@@ -751,11 +765,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.myFriendsList[uid] = infromationAboutFriend
             friendName = str(infromationAboutFriend[2]) + ' ' + str(infromationAboutFriend[3])
             newFriend = FriendsWidget(uid, friendName)
-
+            self.selectedFriendForChatWidget = newFriend
             if str(infromationAboutFriend[5]) == 'Online':
                 newFriend.statusFriendWidget.setVisible(True)
 
             self.friendsListWidget.leftArea.addNewFriend(newFriend)
+            self.btnGroupMyFriendsList.addButton(newFriend, uid)
+            self.btnGroupMyFriendsSettings.addButton(newFriend.settingsFriendWidget, uid)
         else:
             print 'this user exist!'
             QtGui.QMessageBox.about(self, "Warning","Friend take exist!")
@@ -763,8 +779,76 @@ class MainAuthenticationWindow(QtGui.QWidget):
         button = self.bGroupSearchedFriends.button(uid)
         button.setVisible(False)
 
+    def showMessageBox(self, question):
+        result = QMessageBox.question(self, 'Warning', question, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if result == QMessageBox.Yes:
+            return True
+        else:
+            return False
+
+    def deleteFriendByUID(self):
+        print 'deleteFriendFromMyFriends with uid ', self.uidDeletingOrClearDialogFriend
+        result = self.showMessageBox('Do you really want to delete this friend?')
+        if result == True:
+            btnFriend = self.btnGroupMyFriendsList.button(self.uidDeletingOrClearDialogFriend)
+            btnFriendSettings = self.btnGroupMyFriendsSettings.button(self.uidDeletingOrClearDialogFriend)
+
+            self.btnGroupMyFriendsList.removeButton(btnFriend)
+            self.btnGroupMyFriendsSettings.removeButton(btnFriendSettings)
+            btnFriend.setVisible(False)
+            del self.myFriendsList[self.uidDeletingOrClearDialogFriend]
+            del btnFriendSettings
+            del btnFriend
+        else:
+            print 'Refusal of action'
+
+    def clearDialogFriendByUID(self):
+        print 'clearDialogFriendByUID', self.uidDeletingOrClearDialogFriend
+        result = self.showMessageBox('Do you really want to clear this dialog?')
+        if result == True:
+            print 'ok'
+        else:
+            print 'Refusal of action'
+
+    def deleteDialogFriendByUID(self):
+        print 'deleteDialogFriendByUID', self.uidDeletingOrClearDialogFriend
+        result = self.showMessageBox('Do you really want to delete this dialog?')
+        if result == True:
+            print 'ok'
+        else:
+            print 'Refusal of action'
+
+    def selectSettingForFriend(self, uid):
+        print 'press btn Friend ' , uid
+        self.uidDeletingOrClearDialogFriend = uid
+        menu = QtGui.QMenu()
+        menu.addAction(self.tr('Delete friend'), self.deleteFriendByUID)
+        menu.addAction(self.tr('Clear dialog'), self.clearDialogFriendByUID)
+        menu.addAction(self.tr('Delete dialog'), self.deleteDialogFriendByUID)
+        menu.exec_(QtGui.QCursor.pos())
 
 
+
+    def mousePressOnFriendFromFriendsList(self, uid):
+        print 'press on friend with uid', uid
+        print self.myFriendsList[uid]
+        self.rightWidget.setVisible(True)
+        self.searchFriendArea.setVisible(False)
+        pressButton = self.btnGroupMyFriendsList.button(uid)
+        pressedStyleButton = 'background: #EBEDED; border: none;'
+        defoltStyleButton = 'background: #ffffff; border: none;'
+        hoverStyleButton = 'background: #F3F5F5; border: none;'
+        for id in self.myFriendsList:
+            if id == uid:
+                pressButton.setStyleSheet(pressedStyleButton)
+                pressButton.defoltStyle = pressedStyleButton
+                pressButton.hoverStyle = pressedStyleButton
+            else:
+                otherButton = self.btnGroupMyFriendsList.button(id)
+                otherButton.setStyleSheet(defoltStyleButton)
+                otherButton.defoltStyle = defoltStyleButton
+                otherButton.hoverStyle = hoverStyleButton
 
 
     def resizeEvent(self, event):
