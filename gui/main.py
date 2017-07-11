@@ -815,6 +815,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         else:
             statusDelete = False
 
+
         if statusDelete == False:
             QMessageBox.critical(self, "Message", "Friend was deleted!")
 
@@ -842,7 +843,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         else:
             print 'Refusal of action'
 
-    def deleteDialogFriendByUID(self):
+    def deleteConversationFriendByUID(self):
         print 'deleteDialogFriendByUID', self.uidDeletingOrClearDialogFriend
         result = self.showMessageBox('Do you really want to delete this dialog?')
         if result == True:
@@ -858,9 +859,22 @@ class MainAuthenticationWindow(QtGui.QWidget):
         print 'press btn Friend ' , uid
         self.uidDeletingOrClearDialogFriend = uid
         menu = QtGui.QMenu()
-        menu.addAction(self.tr('Delete friend'), self.deleteFriendByUID)
+        menu.addAction(self.tr('View profile'), self.deleteConversationFriendByUID)
         menu.addAction(self.tr('Clear dialog'), self.clearDialogFriendByUID)
-        menu.addAction(self.tr('Delete dialog'), self.deleteDialogFriendByUID)
+        menu.addAction(self.tr('Delete conversation'), self.deleteConversationFriendByUID)
+        menu.addAction(self.tr('Delete friend'), self.deleteFriendByUID)
+        menu.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        menu.setStyleSheet('''QMenu {
+                                background: #ffffff;
+                                font-size: 10px
+                                color: #696969
+                                border-radius: 10px;}
+                              QMenu::item:selected {
+                                background-color: #D0DCDC;
+                                font-size: 10px
+                                color: #696969
+                                border-radius: 10px;}''')
+
         menu.exec_(QtGui.QCursor.pos())
 
 
@@ -886,7 +900,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.statusSelectedUser.setStyleSheet('border: none; padding: 0px;'
                                                   'qproperty-alignment: AlignLeft;'
                                                   'font-size: 14px; color: #696969;')
-
 
 
         pressedStyleButton = 'background: #EBEDED; border: none;'
