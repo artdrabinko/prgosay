@@ -240,24 +240,40 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.rightHeader = EmptyBoxWidget()
         layoutForWidgetsRightHeader = HLayout()
+        layoutForWidgetsRightHeader.setAlignment(QtCore.Qt.AlignVCenter)
+        subLauoytForInformationAboutSelectedFriend = VLayout()
+        subLauoytForInformationAboutSelectedFriend.setContentsMargins(15,0,0,0)
+
+        self.subLauoytForSettingsSelectedFriend = HLayout()
+        self.subLauoytForSettingsSelectedFriend.setContentsMargins(0, 0, 5, 0)
+
         self.rightHeader.setLayout(layoutForWidgetsRightHeader)
 
         self.rightHeader.setMinimumSize(400, 60)
         self.rightHeader.setMaximumSize(1000, 60)
-        self.rightHeader.setStyleSheet('border:none;'
+        self.rightHeader.setStyleSheet('border:none; padding: 0px;'
                                        ' border-bottom: 1px solid #D6D6D6; background: #fdfcfc;')
 
-        #self.labelNameUserReightHeader = QtGui.QLabel('Nicolai Komar')
-        self.labelNameUserReightHeader = QtGui.QLabel()
-        self.labelNameUserReightHeader.setStyleSheet('color : #5d5d5d; font:  Arial;'
-                                                     'font-size: 25px;border:none;')
-        self.labelNameUserReightHeader.setMinimumSize(170, 50)
-        self.labelNameUserReightHeader.setMaximumSize(170, 50)
-        self.labelNameUserReightHeader.setAlignment(QtCore.Qt.AlignCenter)
 
-        layoutForWidgetsRightHeader.addWidget(self.labelNameUserReightHeader)
-        layoutForWidgetsRightHeader.setAlignment(QtCore.Qt.AlignCenter)
+        self.labelNameSelectedUserReightHeader = QtGui.QLabel()
+        self.labelNameSelectedUserReightHeader.setAlignment(QtCore.Qt.AlignLeft)
+        self.labelNameSelectedUserReightHeader.setContentsMargins(0,0,0,5)
+        self.labelNameSelectedUserReightHeader.setStyleSheet('font-size: 18px; color: #282828;'
+                                                             'border:none; qproperty-alignment: AlignLeft;')
 
+        self.statusSelectedUser = QtGui.QLabel()
+        self.statusSelectedUser.setAlignment(QtCore.Qt.AlignLeft)
+        self.statusSelectedUser.setStyleSheet(' border: none; padding: 0px;'
+                                      'qproperty-alignment: AlignLeft;'
+                                      'font-size: 14px; color: #696969;')
+
+        layoutForWidgetsRightHeader.addLayout(subLauoytForInformationAboutSelectedFriend)
+        layoutForWidgetsRightHeader.addLayout(self.subLauoytForSettingsSelectedFriend)
+        subLauoytForInformationAboutSelectedFriend.addWidget(self.labelNameSelectedUserReightHeader)
+        subLauoytForInformationAboutSelectedFriend.addWidget(self.statusSelectedUser)
+
+        self.btnFriendSettings = FriendSettingsWidget()
+        self.subLauoytForSettingsSelectedFriend.addWidget(self.btnFriendSettings)
 
 
         self.rightArea = QtGui.QScrollArea()
@@ -490,7 +506,11 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.btnGroupMyFriendsSettings = QtGui.QButtonGroup()
         self.connect(self.btnGroupMyFriendsSettings, QtCore.SIGNAL('buttonClicked(int)'),self.selectSettingForFriend)
-        self.uidDeletingOrClearDialogFriend = 1
+        self.uidDeletingOrClearDialogFriend = 0
+        self.uidCurrentFriendForDialogue = 0
+
+        self.connect(self.btnFriendSettings, QtCore.SIGNAL('clicked()'), self.settingsFriend)
+
         # ..........End Button Action.........................
         self.selectedFriendForChatWidget = QtGui.QPushButton()
         self.selectedFriendForChatWidgetInformation = []
@@ -500,7 +520,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def start_main_user_form(self):
         self.setWindowTitle('GoSay')
         self.setStyleSheet('background: #EBEBEB;')
-        self.setMinimumSize(380, 450)
+        self.setMinimumSize(400, 450)
         self.setMaximumSize(1500, 1000)
         self.resize(910, 540)
         self.logoWidget.setVisible(False)
@@ -516,7 +536,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.leftTabWidget.setVisible(self.statusConnection)
         self.rightWidget.setVisible(self.statusConnection)
 
-        self.labelNameUserReightHeader.setText(self.inputLineForLoginUser.text())
+        #self.labelNameUserReightHeader.setText(self.inputLineForLoginUser.text())
 
         self.statres = True
 
@@ -789,17 +809,28 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
     def deleteFriendByUID(self):
         print 'deleteFriendFromMyFriends with uid ', self.uidDeletingOrClearDialogFriend
-        result = self.showMessageBox('Do you really want to delete this friend?')
-        if result == True:
+        if 0 != self.uidCurrentFriendForDialogue or 0 != self.uidDeletingOrClearDialogFriend:
+            statusDelete = True
+            result = self.showMessageBox('Do you really want to delete this friend?')
+        else:
+            statusDelete = False
+
+        if statusDelete == False:
+            QMessageBox.critical(self, "Message", "Friend was deleted!")
+
+        elif statusDelete == True and result == True:
             btnFriend = self.btnGroupMyFriendsList.button(self.uidDeletingOrClearDialogFriend)
             btnFriendSettings = self.btnGroupMyFriendsSettings.button(self.uidDeletingOrClearDialogFriend)
 
             self.btnGroupMyFriendsList.removeButton(btnFriend)
             self.btnGroupMyFriendsSettings.removeButton(btnFriendSettings)
+            btnFriendSettings.setVisible(False)
             btnFriend.setVisible(False)
             del self.myFriendsList[self.uidDeletingOrClearDialogFriend]
             del btnFriendSettings
             del btnFriend
+            self.uidDeletingOrClearDialogFriend = 0
+            self.uidCurrentFriendForDialogue = 0
         else:
             print 'Refusal of action'
 
@@ -819,6 +850,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
         else:
             print 'Refusal of action'
 
+    def settingsFriend(self):
+        print self.uidCurrentFriendForDialogue
+        self.selectSettingForFriend(self.uidCurrentFriendForDialogue)
+
     def selectSettingForFriend(self, uid):
         print 'press btn Friend ' , uid
         self.uidDeletingOrClearDialogFriend = uid
@@ -833,9 +868,27 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def mousePressOnFriendFromFriendsList(self, uid):
         print 'press on friend with uid', uid
         print self.myFriendsList[uid]
+        self.uidCurrentFriendForDialogue = uid
+        self.uidDeletingOrClearDialogFriend = uid
+        informationAboutFriend = self.myFriendsList[uid]
         self.rightWidget.setVisible(True)
         self.searchFriendArea.setVisible(False)
         pressButton = self.btnGroupMyFriendsList.button(uid)
+
+
+        self.labelNameSelectedUserReightHeader.setText(str(informationAboutFriend[2]) + ' ' + str(informationAboutFriend[3]))
+        self.statusSelectedUser.setText(str(informationAboutFriend[5]))
+        if str(informationAboutFriend[5]) == 'Online':
+            self.statusSelectedUser.setStyleSheet('border: none; padding: 0px;'
+                                                  'qproperty-alignment: AlignLeft;'
+                                                  'font-size: 14px; color: #579E1C;')
+        else:
+            self.statusSelectedUser.setStyleSheet('border: none; padding: 0px;'
+                                                  'qproperty-alignment: AlignLeft;'
+                                                  'font-size: 14px; color: #696969;')
+
+
+
         pressedStyleButton = 'background: #EBEDED; border: none;'
         defoltStyleButton = 'background: #ffffff; border: none;'
         hoverStyleButton = 'background: #F3F5F5; border: none;'

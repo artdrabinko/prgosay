@@ -265,7 +265,7 @@ class EmptyBoxWidget(QtGui.QLabel):
         self.setMinimumHeight(65)
         self.setMinimumWidth(300)
         self.setContentsMargins(0, 0, 0, 0)
-        self.setStyleSheet('color: #ffffff; border: none; background: #ffffff;')
+        self.setStyleSheet('color: #ffffff; border: none; background: #ffffff; padding: 0px')
 
 
 
@@ -835,6 +835,7 @@ class FriendsWidget(QtGui.QPushButton):
 
         self.settingsFriendWidget = QtGui.QPushButton()
         self.settingsFriendWidget.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.settingsFriendWidget.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
         self.settingsFriendWidget.setMinimumSize(30, 30)
         self.settingsFriendWidget.setMaximumSize(30, 30)
         self.settingsFriendWidget.setStyleSheet("""QPushButton:hover {
@@ -1185,7 +1186,7 @@ class SearchedFriendWidget(QtGui.QWidget):
         else:
             self.statusUser.setStyleSheet('padding: 0px; '
                                           'qproperty-alignment: AlignLeft;'
-                                          'font-size: 13px; color: #464646;')
+                                          'font-size: 13px; color: #696969;')
 
         self.userCity = QtGui.QLabel(self.city)
         self.userCity.setAlignment(QtCore.Qt.AlignVCenter)
@@ -1209,7 +1210,23 @@ class NoSuchUserWidget(QtGui.QLabel):
                            'padding: 0px;')
 
 
+class FriendSettingsWidget(QtGui.QPushButton):
+    def __init__(self, parent=None):
+        QtGui.QPushButton.__init__(self, parent)
+        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        self.setMinimumSize(30, 30)
+        self.setMaximumSize(30, 30)
+        self.setStyleSheet("""QPushButton:hover {
+                             background: url(./img/button_more_hover.png);
+                             padding: 0px;
+                            }
 
+                            QPushButton {
+                            background: url(./img/button_more.png);
+                            color: #ffffff;
+                            border: none;
+                            }""")
 
 
 
