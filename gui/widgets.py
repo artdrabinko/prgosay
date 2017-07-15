@@ -783,7 +783,7 @@ class LeftFriendWidget(QtGui.QPushButton):
 
 
 class FriendsWidget(QtGui.QPushButton):
-    def __init__(self, friendUID, friendName, parent=None, ):
+    def __init__(self, friendUID, friendName, login,parent=None, ):
         QtGui.QPushButton.__init__(self, parent)
         self.setMinimumSize(310, 50)
         self.setMaximumSize(310, 50)
@@ -807,6 +807,7 @@ class FriendsWidget(QtGui.QPushButton):
 
         self.friendUID = friendUID
         self.friendName = friendName
+        self.login = login
         self.friendID = '1'
 
         self.logo = QtGui.QLabel()

@@ -272,6 +272,17 @@ class A:
         self.send_message(searchFriendsMessage)
         #return SearchFriendsMessage
 
+    def sendMessageToFriend(self, myLogin, friendLogin, message):
+        print 'sendMessageToFriend', friendLogin
+        print 'sendMessageToFriend',  message
+        listMess = []
+        listMess.append('10')
+        listMess.append(str(myLogin))
+        listMess.append(str(friendLogin))
+        listMess.append(str(message))
+        print listMess
+        messageForFriend = self.encriptMessage(listMess)
+        self.send_message(messageForFriend)
 
 #..........Test Methods...............................
 
@@ -293,15 +304,20 @@ class A:
         else:
             data = self.sock.recv(2048)
             serverMessage = pickle.loads(data)
-            print serverMessage
-            decoded  = self.chiper.decrypt(str(serverMessage[0][0]).decode('utf-8'))
+            #print serverMessage
+            decoded  = self.chiper.decrypt(serverMessage[0][0])
             encryptMessage = pickle.loads(decoded)
+            print type(encryptMessage)
             print encryptMessage
 
             if encryptMessage[0] == '9':
                 return encryptMessage
+            elif encryptMessage[0] == '11':
+                return encryptMessage
             else:
                 return str(encryptMessage)
+
+
 
 
     def sendMess(self, message):

@@ -29,6 +29,7 @@ class Worker(QObject):
             print 'START'
             mess = self.obj.whileReceive()
             print 'dannie from sock ',mess
+            print type(mess)
             if mess == None:
                 print 'none'
             elif type(mess) == list:
@@ -49,6 +50,7 @@ class Worker(QObject):
 class MainAuthenticationWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
+        self.myLogin = ''
         self.myFriendsList = {}
         self.friendList = {}
         self.searchedFriendListInformation = {}
@@ -509,6 +511,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.connect(self.btnGroupMyFriendsSettings, QtCore.SIGNAL('buttonClicked(int)'),self.selectSettingForFriend)
         self.uidDeletingOrClearDialogFriend = 0
         self.uidCurrentFriendForDialogue = 0
+        self.loginCurrentFriendForDialogue = ''
 
         self.connect(self.btnFriendSettings, QtCore.SIGNAL('clicked()'), self.settingsFriend)
         self.statusRestoredData = False
@@ -644,6 +647,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         if (self.statusAuthorization == True):
             self.start_main_user_form()
             self.start()
+            self.myLogin = str(self.inputLineForLoginUser.text())
         else:
             self.inputLineForPasswordUser.setText('incorrect Pasword')
 
@@ -657,7 +661,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.inputWidgetForSendMessage.clear()
             self.inputWidgetForSendMessage.setFocus(True)
         else:
-            self.act.send_message(self.inputWidgetForSendMessage.text())
+            self.act.sendMessageToFriend(self.myLogin, self.loginCurrentFriendForDialogue,
+                                         self.inputWidgetForSendMessage.text())
 
             self.messageByMeWidget = MessageSendByMeWidget()
             self.messageByMeWidget.LabelMessageWidget.setText(str(self.inputWidgetForSendMessage.text())+ '___' +self.localTime)
@@ -709,7 +714,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.testWidget = MessageFromFriendWidget()
 
-        self.testWidget.LabelMessageWidget.setText('Process_' + str(i)+ '__' +self.localTime)
+        self.testWidget.LabelMessageWidget.setText(str(i)+ '  ' +self.localTime)
         self.layoutForRightArea.addWidget(self.testWidget)
 
         self.emptF = QtGui.QWidget()
@@ -750,7 +755,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
             print mess[i]
             friend = mess[i]
             uid = int(friend[0])
-            searchedFriend = SearchedFriendWidget(str(friend[2]), str(friend[3]),str(friend[5]),str(friend[6]))
+            searchedFriend = SearchedFriendWidget(str(friend[2]), str(friend[3]),
+                                                  str(friend[5]),str(friend[6]))
             self.searchedFriendListInformation[int(friend[0])] = friend
             self.searchedFriendListObjects[uid] = searchedFriend
             if j != 2:
@@ -773,8 +779,17 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
     def processingMessage(self, mess):
+
         if mess[0] == '9' and mess[1] != False:
             self.displayFoundFriends(mess[1])
+            print mess
+            print mess[0]
+
+        elif mess[0] == '11':
+            print '\nprocessingMessage\n'
+            print mess
+            self.addMessageFromFriend(mess[3])
+
         else:
             print 'no such user'
             self.clearSearchArea()
@@ -789,7 +804,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         if key_exists == False:
             self.myFriendsList[uid] = infromationAboutFriend
             friendName = str(infromationAboutFriend[2]) + ' ' + str(infromationAboutFriend[3])
-            newFriend = FriendsWidget(uid, friendName)
+            login = str(infromationAboutFriend[1])
+            newFriend = FriendsWidget(uid, friendName, login)
             self.selectedFriendForChatWidget = newFriend
             if str(infromationAboutFriend[5]) == 'Online':
                 newFriend.statusFriendWidget.setVisible(True)
@@ -810,7 +826,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
     def showMessageBox(self, question):
-        result = QMessageBox.question(self, 'Warning', question, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        result = QMessageBox.question(self, 'Warning', question,
+                                      QMessageBox.Yes | QMessageBox.No,
+                                      QMessageBox.No)
 
         if result == QMessageBox.Yes:
             return True
@@ -897,6 +915,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.uidCurrentFriendForDialogue = uid
         self.uidDeletingOrClearDialogFriend = uid
         informationAboutFriend = self.myFriendsList[uid]
+        self.loginCurrentFriendForDialogue = str(informationAboutFriend[1])
         self.rightWidget.setVisible(True)
         self.searchFriendArea.setVisible(False)
         pressButton = self.btnGroupMyFriendsList.button(uid)
@@ -946,7 +965,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
             information =  myFriendsList[friend]
             uid = int(information[0])
             friendName = str(information[2]) + ' ' + str(information[3])
-            newFriend = FriendsWidget(uid, friendName)
+            login = str(information[1])
+            newFriend = FriendsWidget(uid, friendName, login)
             self.selectedFriendForChatWidget = newFriend
             if str(information[5]) == 'Online':
                 newFriend.statusFriendWidget.setVisible(True)
@@ -973,7 +993,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
             print 'False..............'
         if (self.width() > 900 and self.statres == True):
             print 'True.............'
-            self.restoreData()
 
     #def closeEvent(self, event):
         #messbox =QtGui.QMessageBox()

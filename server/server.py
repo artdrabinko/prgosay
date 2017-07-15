@@ -101,10 +101,12 @@ class AESCipher(object):
 
 
 class Worker:
-    def __init__(self, key, iv):
+    def __init__(self, key, iv, login):
+        self.secretInformationAboutFriend = []
         self.key = key
         self.iv = iv
         self.chiper = AESCipher(self.key, self.iv)
+        self.userLogin = str(login)
 
     def getHashMD5(self, text):
         hash_md5 = hashlib.md5()
@@ -155,7 +157,44 @@ class Worker:
         listMess.append(answer)
         print listMess
         messageForSend = self.encryptMessage(listMess)
-        return messageForSend
+        return self.userLogin, messageForSend
+
+    def number_10(self, argument):
+        #add! pull in DB
+        listMess = []
+        listMess.append('11')
+        listMess.append(argument[1])
+        listMess.append(argument[2])
+        listMess.append(argument[3])
+        destination = argument[2]
+        print listMess
+
+
+        statusForSend = argument[2] in self.secretInformationAboutFriend
+        if statusForSend == True:
+            ExchangeMessage = []
+            encryptMessage = []
+            listHash = []
+
+            information = self.secretInformationAboutFriend[argument[2]]
+            print information
+            chiper = AESCipher(information[0], information[1])
+            encoded = chiper.encrypt(pickle.dumps(listMess, 2))
+
+            encryptMessage.append(encoded)
+            listHash.append(self.getHashMD5(encryptMessage[0]))
+
+            ExchangeMessage.append(encryptMessage)
+            ExchangeMessage.append(listHash)
+
+            encryptedAndDumpMessage = pickle.dumps(ExchangeMessage, 2)
+        else:
+            print 'error'
+            destination = argument[1]
+            listMess[3] = 'user Offline!'
+            encryptedAndDumpMessage = self.encryptMessage(listMess)
+
+        return destination, encryptedAndDumpMessage
 
 
 
@@ -227,11 +266,12 @@ class PubProtocol(basic.LineReceiver):
             self.factory.ListOfUsers.pop(self.userLogin)
         except:
             print '\n.......................Pop error........................'
-
+        del self.factory.secretUsersInformation[self.userLogin]
         try:
+            del self.factory.secretUsersInformation[self.userLogin]
             self.factory.clients.remove(self)
         except:
-            print '\n.........self.factory.clients.remove(self)  error........'
+            print '\n.........self.factory.clients.remove(self)  error........',self.factory.secretUsersInformation
         print self.factory.ListOfUsers
 
 
@@ -241,20 +281,19 @@ class PubProtocol(basic.LineReceiver):
         if self.UserLoginStatus :
             clientMessage = self.worker.decryptMessage(line)
 
-            messageForSend =  self.worker.process_message(clientMessage)
+            destination ,messageForSend =  self.worker.process_message(clientMessage)
             print messageForSend
 
-            print '\nUser %s wants send message' % self.factory.ListOfUsers
-            try:
-                if self.userLogin == 'admin':
-                    self.factory.ListOfUsers['admin'].sendLine(str(messageForSend))
-                    print 'User %s  send message\n' % self.userLogin
+            statusForSend = destination in self.factory.ListOfUsers
+            if statusForSend == True:
+                print '\nUser %s wants send message' % self.userLogin
+                print '\nUsery %s ' % destination
+                self.factory.ListOfUsers[destination].sendLine(str(messageForSend))
+                print 'User %s  send message\n' % self.userLogin
+            else:
+                print 'no such user or this user offline.'
 
-                if self.userLogin == '2':
-                    self.factory.ListOfUsers['2'].sendLine(str(messageForSend))
-                    print 'User %s  send message\n' % self.userLogin
-            except:
-                print 'error admin'
+
 
 
         if self.statusConnection != True :
@@ -306,10 +345,18 @@ class PubProtocol(basic.LineReceiver):
 
 
             if self.statusAuthorithation:
-                self.worker = Worker(self.seansKey, self.iv)
                 self.userLogin = clientMessage[1]
+                self.worker = Worker(self.seansKey, self.iv, self.userLogin)
+
+                print clientMessage[0]
 
                 self.factory.ListOfUsers[self.userLogin] = self
+                listSecretInformation = []
+                listSecretInformation.append(self.seansKey)
+                listSecretInformation.append(self.iv)
+                self.factory.secretUsersInformation[self.userLogin] = listSecretInformation
+                self.worker.secretInformationAboutFriend = self.factory.secretUsersInformation
+                del listSecretInformation
                 print '..............Start list login User.....................'
                 print  self.factory.ListOfUsers
                 try:
@@ -333,6 +380,7 @@ class PubFactory(protocol.Factory):
     def __init__(self):
         self.clients = set()
         self.ListOfUsers = {}
+        self.secretUsersInformation = {}
 
 
     def buildProtocol(self, addr):
