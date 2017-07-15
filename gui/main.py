@@ -5,6 +5,7 @@ import sys
 from time import strftime
 
 from widgets import *
+import cPickle as pickle
 
 sys.path.insert(0, "/home/art/PycharmProjects/prgosay/actions/")
 import action
@@ -510,6 +511,11 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.uidCurrentFriendForDialogue = 0
 
         self.connect(self.btnFriendSettings, QtCore.SIGNAL('clicked()'), self.settingsFriend)
+        self.statusRestoredData = False
+
+
+        self.bGroupSearchedFriends = QtGui.QButtonGroup()
+        self.connect(self.bGroupSearchedFriends, QtCore.SIGNAL('buttonClicked(int)'), self.addNewFriendInFriendsList)
 
         # ..........End Button Action.........................
         self.selectedFriendForChatWidget = QtGui.QPushButton()
@@ -539,6 +545,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         #self.labelNameUserReightHeader.setText(self.inputLineForLoginUser.text())
 
         self.statres = True
+        self.restoreData()
 
     def start(self):
         self.thread = QThread(self)
@@ -737,11 +744,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def displayFoundFriends(self, mess):
         k = 0
         j = 0
-        self.bGroupSearchedFriends = QtGui.QButtonGroup()
         self.clearSearchArea()
-        def checkFriend(widget, btnVisible):
-            if btnVisible == True:
-                widget.setVisible(False)
 
         for i in mess:
             print mess[i]
@@ -754,7 +757,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
                 self.searchFriendArea.layoutForSearchedFriends.addWidget(searchedFriend, k, j)
                 self.bGroupSearchedFriends.addButton(searchedFriend.addFriendButton, uid)
                 btnVisible = uid in self.myFriendsList
-                checkFriend(self.bGroupSearchedFriends.button(uid), btnVisible)
+                if btnVisible == True:
+                    btn = self.searchedFriendListObjects[uid]
+                    btn.addFriendButton.setVisible(False)
                 j = j + 1
             else:
                 k = k + 1
@@ -762,9 +767,9 @@ class MainAuthenticationWindow(QtGui.QWidget):
                 self.searchFriendArea.layoutForSearchedFriends.addWidget(searchedFriend, k, j)
                 self.bGroupSearchedFriends.addButton(searchedFriend.addFriendButton, uid)
                 btnVisible = uid in self.myFriendsList
-                checkFriend(self.bGroupSearchedFriends.button(uid), btnVisible)
-
-        self.connect(self.bGroupSearchedFriends, QtCore.SIGNAL('buttonClicked(int)'), self.addNewFriendInFriendsList)
+                if btnVisible == True:
+                    btn = self.searchedFriendListObjects[uid]
+                    btn.addFriendButton.setVisible(False)
 
 
     def processingMessage(self, mess):
@@ -792,12 +797,17 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.friendsListWidget.leftArea.addNewFriend(newFriend)
             self.btnGroupMyFriendsList.addButton(newFriend, uid)
             self.btnGroupMyFriendsSettings.addButton(newFriend.settingsFriendWidget, uid)
+            btn = self.searchedFriendListObjects[uid]
+            btn.addFriendButton.setVisible(False)
+
+            self.saveData()
         else:
             print 'this user exist!'
             QtGui.QMessageBox.about(self, "Warning","Friend take exist!")
 
-        button = self.bGroupSearchedFriends.button(uid)
-        button.setVisible(False)
+
+
+
 
     def showMessageBox(self, question):
         result = QMessageBox.question(self, 'Warning', question, QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
@@ -832,8 +842,10 @@ class MainAuthenticationWindow(QtGui.QWidget):
             del btnFriend
             self.uidDeletingOrClearDialogFriend = 0
             self.uidCurrentFriendForDialogue = 0
+
         else:
             print 'Refusal of action'
+        self.saveData()
 
     def clearDialogFriendByUID(self):
         print 'clearDialogFriendByUID', self.uidDeletingOrClearDialogFriend
@@ -916,6 +928,39 @@ class MainAuthenticationWindow(QtGui.QWidget):
                 otherButton.defoltStyle = defoltStyleButton
                 otherButton.hoverStyle = hoverStyleButton
 
+    def saveData(self):
+        print 'save Data ....'
+        output = open('data/data.pkl', 'wb')
+        pickle.dump(self.myFriendsList, output, 2)
+        output.close()
+
+
+    def restoreData(self):
+        self.statusRestoredData = True
+        print 'restore Data ....'
+        input = open('data/data.pkl', 'rb')
+        myFriendsList = pickle.load(input)
+        input.close()
+        for friend in myFriendsList:
+            print friend
+            information =  myFriendsList[friend]
+            uid = int(information[0])
+            friendName = str(information[2]) + ' ' + str(information[3])
+            newFriend = FriendsWidget(uid, friendName)
+            self.selectedFriendForChatWidget = newFriend
+            if str(information[5]) == 'Online':
+                newFriend.statusFriendWidget.setVisible(True)
+
+            self.friendsListWidget.leftArea.addNewFriend(newFriend)
+            self.btnGroupMyFriendsList.addButton(newFriend, uid)
+            self.btnGroupMyFriendsSettings.addButton(newFriend.settingsFriendWidget, uid)
+
+
+
+        self.statusRestoredData = False
+        self.myFriendsList = myFriendsList
+        self.saveData()
+
 
     def resizeEvent(self, event):
         if(self.width() < 600):
@@ -928,6 +973,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
             print 'False..............'
         if (self.width() > 900 and self.statres == True):
             print 'True.............'
+            self.restoreData()
 
     #def closeEvent(self, event):
         #messbox =QtGui.QMessageBox()
