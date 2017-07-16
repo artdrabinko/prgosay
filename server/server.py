@@ -191,6 +191,7 @@ class Worker:
         else:
             print 'error'
             destination = argument[1]
+            listMess[1] = listMess[2]
             listMess[3] = 'user Offline!'
             encryptedAndDumpMessage = self.encryptMessage(listMess)
 

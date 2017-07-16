@@ -52,11 +52,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.myLogin = ''
         self.myFriendsList = {}
-        self.friendList = {}
+        self.myChatList = {}
+        self.myfriendListByLogin = {}
         self.searchedFriendListInformation = {}
         self.searchedFriendListObjects = {}
 
         self.bGroupMyFriends = QtGui.QButtonGroup()
+        self.bGroupMyChats = QtGui.QButtonGroup()
 
         self.setWindowTitle('Authentication Window')
         self.setWindowIcon(QtGui.QIcon('connect.png'))
@@ -85,9 +87,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
             def mousePressEvent(parent, event):
                 self.addNewFriendInFriendsList()
 
-        class LeftFriendInList(LeftFriendWidget):
-            def mousePressEvent(parent, event):
-                self.addFriendOnMainLeftWidget()
 
         class buttonAttachFile(ButtonAttachFile):
             def mousePressEvent(parent, event):
@@ -453,11 +452,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.mainLeftWidget = MainLeftWidget()
 
 
-        self.friend = LeftFriendInList('admin', 'Artur Drabinko', 0)
-        self.mainLeftWidget.leftArea.addNewFriend(self.friend)
-
-        self.friendList[self.countUser] = self.friend
-        self.countUser = self.countUser + 1
         self.leftTabWidget = LeftTabWidget()
 
         self.friendsListWidget = MainLeftWidget()
@@ -505,7 +499,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.labelNoSuchUser = NoSuchUserWidget('Sorry, no such user.')
         self.searchFriendArea.layoutForSearchedFriends.addWidget(self.labelNoSuchUser, 0, 0)
         self.btnGroupMyFriendsList = QtGui.QButtonGroup()
-        self.connect(self.btnGroupMyFriendsList, QtCore.SIGNAL('buttonClicked(int)'),self.mousePressOnFriendFromFriendsList)
+        self.connect(self.btnGroupMyFriendsList, QtCore.SIGNAL('buttonClicked(int)'), self.mousePressOnFriendFromFriendsList)
+        self.connect(self.bGroupMyChats, QtCore.SIGNAL('buttonClicked(int)'), self.mousePressOnFriendChatFromFriendsList)
 
         self.btnGroupMyFriendsSettings = QtGui.QButtonGroup()
         self.connect(self.btnGroupMyFriendsSettings, QtCore.SIGNAL('buttonClicked(int)'),self.selectSettingForFriend)
@@ -568,23 +563,34 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
-    def addFriendOnMainLeftWidget(self):
+    def addChatWithFriendOnMainLeftWidget(self, informationForChatWidget):
         print 'addFriendOnMainLeftWidget'
-        self.friend.setParent(None)
-        newFriend = LeftFriendWidget('admin', 'Nikolai Komar', 0)
-        self.mainLeftWidget.leftArea.addNewFriend(newFriend)
-        self.connect(newFriend, QtCore.SIGNAL('clicked()'), self.addFriendOnMainLeftWidget)
+        print informationForChatWidget
+        uid = int(informationForChatWidget[0])
+        login = str(informationForChatWidget[1])
+        friendName = str(informationForChatWidget[2]) + ' ' + str(informationForChatWidget[3])
+        status = str(informationForChatWidget[5])
+        self.uidCurrentFriendForDialogue = uid
+        self.uidDeletingOrClearDialogFriend = uid
 
-        self.friendList[self.countUser] = newFriend
-        self.countUser  = self.countUser  + 1
-        self.mainLeftWidget.leftArea.addNewFriend(self.friend)
-        newFriend.friendLastMessage.setVisible(True)
+        statusChat = login in self.myChatList
+        if statusChat == False:
+            newFriendChat = LeftFriendWidget(login , friendName, 0)
+            if status == 'Online':
+                newFriendChat.statusFriendWidget.setVisible(True)
+            self.myChatList[login] = newFriendChat
+            self.bGroupMyChats.addButton(newFriendChat, uid)
+            self.mainLeftWidget.leftArea.addNewFriend(newFriendChat)
 
-        self.rightWidget.setVisible(True)
-        self.searchFriendArea.setVisible(False)
 
+            #newFriend.friendLastMessage.setVisible(True)
+            self.rightWidget.setVisible(True)
+            self.searchFriendArea.setVisible(False)
 
-        print self.friendList
+            print self.myfriendListByLogin
+            print 'user added!'
+        else:
+            print 'user exist!'
 
     def peressB(self):
         #self.rightAreaForUserInformation.setParent(None)
@@ -680,9 +686,11 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
             self.messageByMeWidget.widget = self.rightAreaForUserInformation
 
-
-            self.friendList[self.countUser - 1].messageCountWidget.setVisible(False)
-            self.friendList[self.countUser - 1].messageCount = 0
+            print 'send message\n ', self.myChatList
+            print 'send message\n ', self.loginCurrentFriendForDialogue
+            friend = self.myChatList[self.loginCurrentFriendForDialogue]
+            friend.messageCountWidget.setVisible(False)
+            friend.messageCount = 0
 
 
     def showAttachDialog(self):
@@ -710,11 +718,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.buttonAttachFile.setFocus(False)
         self.inputWidgetForSendMessage.setFocus(True)
 
-    def addMessageFromFriend(self,i):
-
+    def addMessageFromFriend(self, messlist):
+        fromFriend = str(messlist[1])
+        toFriend = messlist[2]
+        message = str(messlist[3])
         self.testWidget = MessageFromFriendWidget()
 
-        self.testWidget.LabelMessageWidget.setText(str(i)+ '  ' +self.localTime)
+        self.testWidget.LabelMessageWidget.setText(message + '  ' + self.localTime)
         self.layoutForRightArea.addWidget(self.testWidget)
 
         self.emptF = QtGui.QWidget()
@@ -722,11 +732,20 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.emptF.setStyleSheet('border: none')
         self.layoutForRightArea.addWidget(self.emptF)
 
-        self.friendList[self.countUser-1].setCountMessage(1)
+        print 'addMessageFromFriend', self.myChatList
+        print 'addMessageFromFriend', fromFriend
+        information = self.myfriendListByLogin[fromFriend]
+        self.addChatWithFriendOnMainLeftWidget(information)
+        chat = self.myChatList[fromFriend]
+        chat.setCountMessage(1)
+        #self.friendList[self.countUser-1].setCountMessage(1)
 
-        self.friendList[self.countUser - 1].messageCountWidget.setVisible(True)
-        self.friendList[self.countUser - 1].friendLastMessage.setText( str(i)[0:45]+'...')
-        self.friendList[self.countUser - 1].statusFriendWidget.setVisible(True)
+        chat.messageCountWidget.setVisible(True)
+        #self.friendList[self.countUser - 1].messageCountWidget.setVisible(True)
+        chat.friendLastMessage.setText( message[0:45] + '...')
+        #self.friendList[self.countUser - 1].friendLastMessage.setText( str(i)[0:45]+'...')
+        chat.statusFriendWidget.setVisible(True)
+        #self.friendList[self.countUser - 1].statusFriendWidget.setVisible(True)
 
 
 
@@ -788,7 +807,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         elif mess[0] == '11':
             print '\nprocessingMessage\n'
             print mess
-            self.addMessageFromFriend(mess[3])
+            self.addMessageFromFriend(mess)
 
         else:
             print 'no such user'
@@ -799,10 +818,12 @@ class MainAuthenticationWindow(QtGui.QWidget):
     def addNewFriendInFriendsList(self, uid):
         infromationAboutFriend = self.searchedFriendListInformation[uid]
         uid = int(infromationAboutFriend[0])
+        login = str(infromationAboutFriend[1])
 
         key_exists = uid in self.myFriendsList
         if key_exists == False:
             self.myFriendsList[uid] = infromationAboutFriend
+            self.myfriendListByLogin[login] = infromationAboutFriend
             friendName = str(infromationAboutFriend[2]) + ' ' + str(infromationAboutFriend[3])
             login = str(infromationAboutFriend[1])
             newFriend = FriendsWidget(uid, friendName, login)
@@ -855,6 +876,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
             self.btnGroupMyFriendsSettings.removeButton(btnFriendSettings)
             btnFriendSettings.setVisible(False)
             btnFriend.setVisible(False)
+
+
+            information =  self.myFriendsList[self.uidDeletingOrClearDialogFriend]
+            login = str(information[1])
+            print 'myfriendListByLogin', login
+            print 'myfriendListByLogin', self.myfriendListByLogin
+
             del self.myFriendsList[self.uidDeletingOrClearDialogFriend]
             del btnFriendSettings
             del btnFriend
@@ -909,12 +937,26 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
 
+    def mousePressOnFriendChatFromFriendsList(self, uid):
+        print 'mousePressOnFriendChatFromFriendsList', uid
+        informationAboutChatFriend = self.myFriendsList[uid]
+        button = self.myChatList[informationAboutChatFriend[1]]
+
+        button.setStyleSheet('background: #DFE5E6; border: none;')
+        button.messageCountWidget.setVisible(False)
+        button.messageCount = 0
+        self.mousePressOnFriendFromFriendsList(uid)
+
+
+
     def mousePressOnFriendFromFriendsList(self, uid):
         print 'press on friend with uid', uid
+        informationAboutFriend = self.myFriendsList[uid]
+
         print self.myFriendsList[uid]
         self.uidCurrentFriendForDialogue = uid
         self.uidDeletingOrClearDialogFriend = uid
-        informationAboutFriend = self.myFriendsList[uid]
+
         self.loginCurrentFriendForDialogue = str(informationAboutFriend[1])
         self.rightWidget.setVisible(True)
         self.searchFriendArea.setVisible(False)
@@ -932,6 +974,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
                                                   'qproperty-alignment: AlignLeft;'
                                                   'font-size: 14px; color: #696969;')
 
+        self.addChatWithFriendOnMainLeftWidget(informationAboutFriend)
 
         pressedStyleButton = 'background: #EBEDED; border: none;'
         defoltStyleButton = 'background: #ffffff; border: none;'
@@ -966,6 +1009,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
             uid = int(information[0])
             friendName = str(information[2]) + ' ' + str(information[3])
             login = str(information[1])
+            self.myfriendListByLogin[login] = information
             newFriend = FriendsWidget(uid, friendName, login)
             self.selectedFriendForChatWidget = newFriend
             if str(information[5]) == 'Online':

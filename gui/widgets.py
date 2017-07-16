@@ -745,7 +745,7 @@ class LeftFriendWidget(QtGui.QPushButton):
         self.friendLastMessage = QtGui.QLabel()
         self.friendLastMessage.setMaximumWidth(180)
         self.friendLastMessage.setWordWrap(True)
-        self.friendLastMessage.setVisible(False)
+        #self.friendLastMessage.setVisible(False)
         self.friendLastMessage.setStyleSheet('border: none; font-size: 12px; color: #696969;')
         self.friendNameAndMessageLayout.addWidget(self.friendNameAndStatus)
         self.friendNameAndMessageLayout.addWidget(self.friendLastMessage)
@@ -769,14 +769,17 @@ class LeftFriendWidget(QtGui.QPushButton):
     def leaveEvent(self, event):
         self.setStyleSheet(self.defoltStyle)
 
-    def mousePressEvent(self, event):
-        self.setStyleSheet('background: #DFE5E6; border: none;')
-        self.messageCountWidget.setVisible(False)
-        self.messageCount = 0
+    #def mousePressEvent(self, event):
+
 
     def setCountMessage(self, count):
         self.messageCount = self.messageCount + count
-        self.messageCountWidget.setText(str(self.messageCount))
+        if self.messageCount > 99:
+            self.messageCountWidget.setText('99+')
+            self.messageCountWidget.setMinimumSize(28, 22)
+        else:
+            self.messageCountWidget.setText(str(self.messageCount))
+            self.messageCountWidget.setMinimumSize(22, 22)
 
     def getCountMessage(self, count):
         return self.messageCountWidget.text()
