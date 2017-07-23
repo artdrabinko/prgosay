@@ -959,6 +959,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         informationAboutChatFriend = self.myFriendsList[uid]
         button = self.myChatList[informationAboutChatFriend[1]]
 
+
         button.setStyleSheet('background: #DFE5E6; border: none;')
         button.messageCountWidget.setVisible(False)
         button.messageCount = 0
