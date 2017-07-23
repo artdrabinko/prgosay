@@ -784,6 +784,7 @@ class LeftFriendWidget(QtGui.QPushButton):
         self.friendNameAndMessage.setStyleSheet('border: none;')
         self.friendNameAndMessage.setLayout(self.friendNameAndMessageLayout)
 
+
         self.friendNameAndStatus = QtGui.QWidget()
         self.friendNameAndStatus.setContentsMargins(0, 0, 0, 0)
         self.friendNameAndStatusLayout = HLayout()
