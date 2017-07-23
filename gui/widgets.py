@@ -59,6 +59,137 @@ class HLayout(QtGui.QHBoxLayout):
         self.setMargin(0)
         self.setSpacing(0)
 
+
+
+class inputLineLoginWidget(QtGui.QLineEdit):
+    def __init__(self, parent=None):
+        QtGui.QLineEdit.__init__(self, parent)
+        self.setMouseTracking(True)
+        self.setMaximumSize(300, 40)
+        self.setMinimumSize(300, 40)
+        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; margin : 0px;'
+                           ' border: none; border-bottom: 1px solid #7ca0ca;'
+                           'font-size:16px;')
+        self.setText('Login or phone')
+
+    def focusOutEvent(self, event):
+        if (len(self.text()) == 0 or 'Login or phone' == self.text()):
+            self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; '
+                               'margin : 0px;border: none; border-bottom: 1px solid #7ca0ca;')
+            self.setText('Login or phone')
+
+    def focusInEvent(self, event):
+        if (len(self.text()) == 0 or 'Login or phone' == self.text()):
+            self.clear()
+        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; '
+                           'margin : 0px; border: none; border-bottom: 1.6px  solid #edf2f8;')
+
+
+class inputLinePasswordWidget(QtGui.QLineEdit):
+    def __init__(self, parent=None):
+        QtGui.QLineEdit.__init__(self, parent)
+        self.setMouseTracking(True)
+        self.setMaximumSize(300, 40)
+        self.setMinimumSize(300, 40)
+        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc;'
+                           ' border: none; border-bottom: 1px solid #7ca0ca;')
+        self.setText('Password                                    Forgot?')
+
+    def focusOutEvent(self, event):
+        if (len(self.text()) == 0):
+            self.clear()
+            self.setEchoMode(QtGui.QLineEdit.Normal)
+            self.setText('Password                                    Forgot?')
+        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; margin :'
+                           ' 0px;border: none; border-bottom: 1px solid #7ca0ca;')
+
+    def focusInEvent(self, event):
+        if (len(self.text()) == 0 or 'Password                                    Forgot?' == self.text()):
+            self.clear()
+            self.setEchoMode(QtGui.QLineEdit.Password)
+        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; '
+                           'margin : 0px; border: none; border-bottom: 1.6px solid #edf2f8;')
+
+class buttonLoginWidget(QtGui.QPushButton):
+    def __init__(self, parent=None):
+        QtGui.QPushButton.__init__(self, parent)
+        self.setMouseTracking(True)
+        self.setMaximumSize(250, 38)
+        self.setMinimumSize(250, 38)
+        self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
+        self.setText('Login')
+
+    #def mousePressEvent(self, event):
+        #self.setStyleSheet('background-color: #5f90c8; color: #ffffff; border: none;')
+        #print 'mousePressEvent press'
+
+    def mouseReleaseEvent(self, event):
+        self.setStyleSheet('background-color: #6698cf; color: #ffffff; border: none;')
+        # print 'mouseReleaseEvent press'
+
+    def enterEvent(self, event):
+        self.setStyleSheet('background-color: #6e9cd0; color: #ffffff; border: none;')
+        self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
+        # print 'enterEvent press'
+
+    def leaveEvent(self, event):
+        self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
+        # print 'leaveEvent press'
+
+class AuthenticationWindowWidget(QtGui.QLabel):
+    def __init__(self, parent=None):
+        QtGui.QLabel.__init__(self, parent)
+        self.setMinimumSize(600,400)
+        self.setMaximumSize(600,400)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.layoutForWidgetAuthenticationWindow = VLayout()
+        self.layoutForWidgetAuthenticationWindow.setAlignment(QtCore.Qt.AlignHCenter)
+
+        self.setLayout(self.layoutForWidgetAuthenticationWindow)
+
+        self.logoLabel = QtGui.QLabel("GoSay")
+        self.logoLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.logoLabel.setMaximumHeight(120)
+        self.logoLabel.setMaximumSize(300, 120)
+        self.logoLabel.setMinimumSize(300, 120)
+        self.logoLabel.setStyleSheet('border: none; background-color: #5181b8; color : #edf2f8;'
+                           ' font: bold  Arial; font-size: 60px;')
+
+        self.welcomLabel = QtGui.QLabel("Welcom to GoSay Client")
+        self.welcomLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.welcomLabel.setVisible(False)
+        self.welcomLabel.setMaximumSize(300, 50)
+        self.welcomLabel.setMinimumSize(300, 50)
+        self.welcomLabel.setMaximumHeight(50)
+        self.welcomLabel.setStyleSheet('border: none; color : #edf2f8;'
+                           ' font-size: 24px;')
+
+        self.pleaseInputLoginLabel =  QtGui.QLabel("Please input Login or Phone to get Started")
+        self.pleaseInputLoginLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        self.pleaseInputLoginLabel.setMaximumHeight(30)
+
+        self.pleaseInputLoginLabel.setStyleSheet('border: none; color : #BFD1E5;'
+                           ' font-size: 16px;')
+
+        self.inputLineLogin = inputLineLoginWidget()
+        self.inputLinePassword = inputLinePasswordWidget()
+        self.empt = emptyBlock()
+
+        self.buttonLogin = buttonLoginWidget()
+
+        self.layoutForWidgetAuthenticationWindow.addWidget(self.logoLabel)
+        self.layoutForWidgetAuthenticationWindow.addWidget(self.welcomLabel)
+        self.layoutForWidgetAuthenticationWindow.addWidget(self.pleaseInputLoginLabel)
+
+        self.layoutForWidgetAuthenticationWindow.addWidget(self.inputLineLogin)
+        self.layoutForWidgetAuthenticationWindow.addWidget(self.inputLinePassword)
+        self.layoutForWidgetAuthenticationWindow.addWidget(self.empt)
+
+        #self.layoutForWidgetAuthenticationWindow.addWidget(self.buttonLogin)
+
+
+
+
 class logoLabelWidget(QtGui.QLabel):
     def __init__(self, parent=None):
         QtGui.QLabel.__init__(self, parent)
@@ -81,53 +212,6 @@ class logoWidget(QtGui.QLabel):
         logoLayout.addWidget(self.logoLabel)
 
 
-class inputLineLogin(QtGui.QLineEdit):
-    def __init__(self, parent=None):
-        QtGui.QLineEdit.__init__(self, parent)
-        self.setMouseTracking(True)
-        self.setMaximumSize(250, 30)
-        self.setMinimumSize(250, 30)
-        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; margin : 0px;'
-                           ' border: none; border-bottom: 1px solid #7ca0ca;')
-        self.setText('Login or phone')
-
-    def focusOutEvent(self, event):
-        if (len(self.text()) == 0 or 'Login or phone' == self.text()):
-            self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; '
-                               'margin : 0px;border: none; border-bottom: 1px solid #7ca0ca;')
-            self.setText('Login or phone')
-
-    def focusInEvent(self, event):
-        if (len(self.text()) == 0 or 'Login or phone' == self.text()):
-            self.clear()
-        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; '
-                           'margin : 0px; border: none; border-bottom: 1.6px  solid #edf2f8;')
-
-
-class inputLinePassword(QtGui.QLineEdit):
-    def __init__(self, parent=None):
-        QtGui.QLineEdit.__init__(self, parent)
-        self.setMouseTracking(True)
-        self.setMaximumSize(250, 40)
-        self.setMinimumSize(250, 40)
-        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc;'
-                           ' border: none; border-bottom: 1px solid #7ca0ca;')
-        self.setText('Password                                    Forgot?')
-
-    def focusOutEvent(self, event):
-        if (len(self.text()) == 0):
-            self.clear()
-            self.setEchoMode(QtGui.QLineEdit.Normal)
-            self.setText('Password                                    Forgot?')
-        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; margin :'
-                           ' 0px;border: none; border-bottom: 1px solid #7ca0ca;')
-
-    def focusInEvent(self, event):
-        if (len(self.text()) == 0 or 'Password                                    Forgot?' == self.text()):
-            self.clear()
-            self.setEchoMode(QtGui.QLineEdit.Password)
-        self.setStyleSheet('background-color: #5181b8; color: #a8c0dc; '
-                           'margin : 0px; border: none; border-bottom: 1.6px solid #edf2f8;')
 
 
 class emtyBlockAfterEdit(QtGui.QLabel):
@@ -137,31 +221,7 @@ class emtyBlockAfterEdit(QtGui.QLabel):
         self.setMaximumSize(100, 0)
 
 
-class buttonLogin0(QtGui.QLabel):
-    def __init__(self, parent=None):
-        QtGui.QLabel.__init__(self, parent)
-        self.setMouseTracking(True)
-        self.setMaximumSize(250, 38)
-        self.setMinimumSize(250, 38)
-        self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
-        self.setText('                              Login')
 
-    def mousePressEvent(self, event):
-        self.setStyleSheet('background-color: #5f90c8; color: #ffffff; border: none;')
-        # print 'mousePressEvent press'
-
-    def mouseReleaseEvent(self, event):
-        self.setStyleSheet('background-color: #6698cf; color: #ffffff; border: none;')
-        # print 'mouseReleaseEvent press'
-
-    def enterEvent(self, event):
-        self.setStyleSheet('background-color: #6e9cd0; color: #ffffff; border: none;')
-        self.setCursor(QCursor(QtCore.Qt.PointingHandCursor))
-        # print 'enterEvent press'
-
-    def leaveEvent(self, event):
-        self.setStyleSheet('background-color: #6696cc; color: #ffffff; border: none;')
-        # print 'leaveEvent press'
 
 
 class emptyBlock(QtGui.QLabel):
@@ -686,6 +746,9 @@ class LeftAreaWidget(QtGui.QScrollArea):
     def addNewFriend(self, newFriend):
         self.layoutForleftArea.addWidget(newFriend)
 
+
+
+#left friend redact now.....................................................
 
 class LeftFriendWidget(QtGui.QPushButton):
     def __init__(self, friendLogin, friendName, messageCount, parent=None, ):

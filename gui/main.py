@@ -67,8 +67,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         self.setContentsMargins(0, 0, 0, 0)
-        self.setMinimumSize(300, 480)
-        self.setMaximumSize(310, 480)
+        self.setMinimumSize(750, 500)
+        self.setMaximumSize(750, 500)
 
         self.setStyleSheet('background-color: #5181b8; border: none;')
 
@@ -93,7 +93,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
                 print 'open directory'
                 self.showAttachDialog()
 
-        class buttonLogin(buttonLogin0):
+        class buttonLogin(buttonLoginWidget):
             def mousePressEvent(parent, event):
                 print '370'
                 self.pressLoginAction()
@@ -177,8 +177,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         # ...................Start content authentification.............................
         self.logoWidget = logoWidget()  # first width second hight
 
-        self.inputLineForLoginUser = inputLineLogin()
-        self.inputLineForPasswordUser = inputLinePassword()
+        self.inputLineForLoginUser = inputLineLoginWidget()
+        self.inputLineForPasswordUser = inputLinePasswordWidget()
         self.emtyBlockAfterEdit = emtyBlockAfterEdit()
 
         self.btnLogin = buttonLogin()
@@ -186,13 +186,18 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
         self.btnRegistration = ButtonRegistration()
 
-        layoutForWidgetAuthenticationWindow.addWidget(self.logoWidget)
-        layoutForWidgetAuthenticationWindow.addWidget(self.inputLineForLoginUser)
-        layoutForWidgetAuthenticationWindow.addWidget(self.inputLineForPasswordUser)
-        layoutForWidgetAuthenticationWindow.addWidget(self.emtyBlockAfterEdit)
-        layoutForWidgetAuthenticationWindow.addWidget(self.btnLogin)
-        layoutForWidgetAuthenticationWindow.addWidget(self.emptyBlock)
-        layoutForWidgetAuthenticationWindow.addWidget(self.btnRegistration)
+        self.AuthenticationWindow = AuthenticationWindowWidget()
+        self.AuthenticationWindow.layoutForWidgetAuthenticationWindow.addWidget(self.btnLogin)
+
+
+        layoutForWidgetAuthenticationWindow.addWidget(self.AuthenticationWindow)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.logoWidget)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.inputLineForLoginUser)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.inputLineForPasswordUser)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.emtyBlockAfterEdit)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.btnLogin)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.emptyBlock)
+        #layoutForWidgetAuthenticationWindow.addWidget(self.btnRegistration)
 
         # ...................End content authentification.............................
 
@@ -450,15 +455,19 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.countUser = 0
 
         self.mainLeftWidget = MainLeftWidget()
+        self.mainLeftWidget.setVisible(False)
 
 
         self.leftTabWidget = LeftTabWidget()
 
+
         self.friendsListWidget = MainLeftWidget()
+        self.friendsListWidget.setVisible(False)
 
 
         self.buttonAdd = AddFriendWidget()
         self.friendsListWidget.leftArea.addNewFriend(self.buttonAdd)
+
 
 
 
@@ -492,6 +501,13 @@ class MainAuthenticationWindow(QtGui.QWidget):
 
 
         #..........Start Button Action.........................
+
+
+
+        self.connect(self.AuthenticationWindow.buttonLogin, QtCore.SIGNAL('clicked()'), self.pressLoginAction)
+
+
+
         self.connect(self.buttonAdd, QtCore.SIGNAL('clicked()'), self.addFriendThroughSearchAndVisibleSearchArea)
         #self.connect(self.buttonAdd, QtCore.SIGNAL('clicked()'), self.addNewFriendOnListWidget)
         self.connect(self.searchFriendArea.searchButton, QtCore.SIGNAL('clicked()'), self.searchFriends)
@@ -534,6 +550,7 @@ class MainAuthenticationWindow(QtGui.QWidget):
         self.btnLogin.setVisible(False)
         self.emptyBlock.setVisible(False)
         self.btnRegistration.setVisible(False)
+        self.AuthenticationWindow.setVisible(False)
 
 
         #self.leftWidget.setVisible(self.statusConnection)
@@ -641,21 +658,21 @@ class MainAuthenticationWindow(QtGui.QWidget):
         print 'press ...........end pressBackAction...........'
 
     def pressLoginAction(self):
-        self.btnLogin.setCursor(QCursor(QtCore.Qt.WaitCursor))
+        self.AuthenticationWindow.buttonLogin.setCursor(QCursor(QtCore.Qt.WaitCursor))
         if (self.statusConnection == False):
             self.statusConnection = self.act.estabilishConnection()
-            self.btnLogin.setCursor(QCursor(QtCore.Qt.ArrowCursor))
+            self.AuthenticationWindow.buttonLogin.setCursor(QCursor(QtCore.Qt.ArrowCursor))
 
         if (self.statusConnection == True and self.statusAuthorization == False):
-            self.statusAuthorization = self.act.loginAction(str(self.inputLineForLoginUser.text()),
-                                                            str(self.inputLineForPasswordUser.text()))
+            self.statusAuthorization = self.act.loginAction(str(self.AuthenticationWindow.inputLineLogin.text()),
+                                                            str(self.AuthenticationWindow.inputLinePassword.text()))
 
         if (self.statusAuthorization == True):
             self.start_main_user_form()
             self.start()
-            self.myLogin = str(self.inputLineForLoginUser.text())
+            self.myLogin = str(self.AuthenticationWindow.inputLineLogin.text())
         else:
-            self.inputLineForPasswordUser.setText('incorrect Pasword')
+            self.AuthenticationWindow.inputLinePassword.setText('incorrect Pasword')
 
 
 
@@ -946,6 +963,8 @@ class MainAuthenticationWindow(QtGui.QWidget):
         button.messageCountWidget.setVisible(False)
         button.messageCount = 0
         self.mousePressOnFriendFromFriendsList(uid)
+        self.rightWidget.setVisible(True)
+        self.searchFriendArea.setVisible(False)
 
 
 
@@ -1030,9 +1049,6 @@ class MainAuthenticationWindow(QtGui.QWidget):
         if(self.width() < 600):
             #self.leftWidget.setVisible(False)
             self.leftTabWidget.setVisible(False)
-        if(self.width() > 600):
-            #self.leftWidget.setVisible(True)
-            self.leftTabWidget.setVisible(True)
         if (self.width() < 900 and self.statres == True):
             print 'False..............'
         if (self.width() > 900 and self.statres == True):
